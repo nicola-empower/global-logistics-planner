@@ -1,18 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Logistics Planner - Tech Summit Roadshow</title>
-    
-    <!-- Removed old fonts, Added new 'Inter' font for a clean, corporate feel -->
+    <!-- Use a modern, corporate-friendly font like Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
     <style>
         :root {
             /* Corporate/Global Theme */
@@ -29,33 +25,30 @@
         }
 
         body {
-            /* Changed font */
+            /* Use the new font */
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom right, #004d99, #0077b6);
+            /* Set a clean, corporate gradient as the fallback */
+            background-color: #f0f4f8;
+            background-image: linear-gradient(to bottom right, #004d99, #0077b6);
             color: var(--dark-text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            
-            /* Removed the placeholder map image */
-            /* background-image: url('https://placehold.co/1920x1080/333333/FFFFFF?text=Global+Logistics+Map'); */
-            
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
 
         h1, h2, h3, h4, h5, h6 {
-            /* Changed font */
-            font-family: 'Inter', sans-serif; /* Switched to Inter for corporate feel */
+            /* Use the new font */
+            font-family: 'Inter', sans-serif;
             font-weight: 700;
             text-align: center;
             margin-bottom: 20px;
         }
-        /* Changed h1 font */
-        h1 { font-size: 2.8em; color: var(--light-text); text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Inter', sans-serif; }
+        h1 { font-size: 2.8em; color: var(--light-text); text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         h2 { font-size: 2.2em; color: var(--primary-blue); }
         h3 { font-size: 1.8em; color: var(--dark-text); }
 
@@ -80,19 +73,19 @@
         nav {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap; /* Allow nav items to wrap on smaller screens */
             background-color: rgba(51, 51, 51, 0.8);
             padding: 10px 0;
             border-radius: 10px;
             margin: 10px auto;
-            max-width: 800px;
+            max-width: 95%; /* Use percentage for better wrapping */
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            flex-wrap: wrap; /* Added for better mobile wrapping */
         }
         nav a {
             color: var(--light-text);
             text-decoration: none;
             padding: 10px 20px;
-            margin: 5px; /* Added margin for wrapping */
+            margin: 5px; /* Add margin for wrapping */
             border-radius: 8px;
             transition: background-color 0.3s ease;
             font-weight: bold;
@@ -109,7 +102,7 @@
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         section h2 {
-            /* Changed font */
+            /* Use the new font */
             font-family: 'Inter', sans-serif;
             font-weight: 700;
             color: var(--primary-blue);
@@ -142,6 +135,8 @@
         .checklist input[type="checkbox"] {
             margin-right: 10px;
             transform: scale(1.5);
+            /* Style the checkbox */
+            accent-color: var(--primary-blue);
         }
 
         .input-group {
@@ -156,24 +151,26 @@
         }
         .input-group input[type="text"],
         .input-group input[type="number"],
+        .input-group input[type="date"],
+        .input-group input[type="time"],
         .input-group input[type="datetime-local"],
-        .input-group input[type="date"], /* Added rule for date input */
-        .input-group input[type="time"], /* Added rule for time input */
+        .input-group input[type="url"],
         .input-group textarea,
         .input-group select {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 1em;
-            width: calc(100% - 22px);
-            box-sizing: border-box;
-             /* Changed font */
+            /* Use Inter font in forms */
             font-family: 'Inter', sans-serif;
+            width: 100%; /* Use 100% and box-sizing */
+            box-sizing: border-box; /* Include padding in width */
         }
         .input-group textarea {
             min-height: 80px;
             resize: vertical;
         }
+        
         button {
             background-color: var(--primary-blue);
             color: var(--light-text);
@@ -183,10 +180,10 @@
             cursor: pointer;
             font-size: 1.1em;
             font-weight: bold;
+            /* Use Inter font in buttons */
+            font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, transform 0.2s ease;
             margin-top: 10px;
-             /* Changed font */
-            font-family: 'Inter', sans-serif;
         }
         button:hover {
             background-color: var(--accent-turquoise);
@@ -209,6 +206,8 @@
         }
         .add-item-form button {
             grid-column: span 1;
+            /* Align button nicely in the grid */
+            align-self: end;
         }
 
         .photo-gallery {
@@ -233,17 +232,20 @@
             margin-top: 30px;
             box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
         }
-
-        /* Dashboard action items list */
-        #dashboard-action-items {
-            list-style-type: disc;
-            padding-left: 20px;
-            margin-top: 10px;
+        
+        /* Dashboard action items */
+        .action-item-list {
+            list-style-type: none;
+            padding-left: 0;
         }
-         #dashboard-action-items li {
-            font-size: 1.1em;
-            margin-bottom: 5px;
-         }
+        .action-item-list li {
+            background-color: var(--accent-white);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-weight: 500;
+        }
 
         /* Responsive Adjustments */
         @media (max-width: 768px) {
@@ -253,8 +255,8 @@
             }
             h1 { font-size: 2em; }
             h2 { font-size: 1.8em; }
-            nav { flex-direction: column; align-items: center; } /* Center links */
-            nav a { margin: 5px 0; width: 90%; text-align: center;}
+            /* nav { flex-direction: column; } */ /* Keep wrap for better tablet */
+            nav a { margin: 5px; padding: 10px 15px; }
         }
 
     </style>
@@ -277,48 +279,42 @@
     <div class="container">
         <section id="dashboard">
             <h2>Project Dashboard</h2>
-            <p>Welcome, Alex. Project Roadshow status:</p>
             <div id="nextEvent" style="font-size: 1.2em; font-weight: bold; margin-top: 15px; color: var(--accent-orange);">Loading next event...</div>
             
-            <!-- This div will be populated by the new dashboard logic -->
-            <div id="dashboard-summary">
-                <h3 style="text-align: left; margin-top: 20px; color: var(--primary-blue);">Action Items:</h3>
-                <ul id="dashboard-action-items">
-                    <li>Loading...</li>
-                </ul>
-            </div>
+            <h3 style="font-size: 1.5em; color: var(--dark-text); text-align: left; margin-top: 20px;">Action Items (from Kit List):</h3>
+            <ul id="actionItemsList" class="action-item-list">
+                <!-- Action items will be populated by JS -->
+            </ul>
         </section>
-
-        <!-- === NEW SECTION === -->
+        
+        <!-- NEW Add Event Section -->
         <section id="add-event">
             <h2>Add New Itinerary Event</h2>
-            <p>Add a new item to the roadshow schedule. This will appear in the main itinerary list below.</p>
-            <form id="addItineraryForm" class="add-item-form">
+            <form id="addEventForm" class="add-item-form">
                 <div class="input-group">
-                    <label for="newEventDate">Date:</label>
-                    <input type="date" id="newEventDate" required>
+                    <label for="eventDate">Date:</label>
+                    <input type="date" id="eventDate" required>
                 </div>
                 <div class="input-group">
-                    <label for="newEventTitle">Event Title:</label>
-                    <input type="text" id="newEventTitle" placeholder="e.g., Client Dinner, Venue Setup" required>
+                    <label for="eventTitle">Title:</label>
+                    <input type="text" id="eventTitle" placeholder="e.g., Meeting with CEO" required>
                 </div>
                 <div class="input-group">
-                    <label for="newEventTime">Time (24-hr):</label>
-                    <input type="time" id="newEventTime" required>
+                    <label for="eventTime">Time (24h):</label>
+                    <input type="time" id="eventTime" required>
                 </div>
-                <div class="input-group">
-                    <label for="newEventDescription">Description/Details:</label>
-                    <input type="text" id="newEventDescription" placeholder="e.g., Meet at The Shard" required>
+                <div class="input-group" style="grid-column: 1 / -1;"> <!-- Span full width -->
+                    <label for="eventDescription">Description:</label>
+                    <input type="text" id="eventDescription" placeholder="e.g., Arrive at Louvre, Security Check..." required>
                 </div>
                 <button type="submit" style="grid-column: 1 / -1;">Add Event to Itinerary</button>
             </form>
         </section>
-        <!-- === END NEW SECTION === -->
 
         <section id="itinerary">
-            <h2>The European Roadshow Itinerary</h2>
+            <h2>Itinerary: Glasgow to Istanbul</h2>
             <div id="itinerary-list">
-                <!-- Itinerary items will be injected here by JS -->
+                <!-- Itinerary items will be populated by JS -->
             </div>
         </section>
 
@@ -332,10 +328,10 @@
                 <button type="submit">Add to List</button>
             </form>
             <div id="packing-checklist" class="checklist">
-                <!-- Packing list items will be injected here by JS -->
+                <!-- Packing list will be populated by JS -->
             </div>
             <p style="margin-top: 20px; font-weight: bold; color: var(--accent-orange);">
-                *Remember to check local power adapter requirements for Milan!*
+                *Remember to check power adapter requirements for Germany, France, Italy, and Turkey!*
             </p>
         </section>
 
@@ -344,7 +340,7 @@
             <div id="budget-summary">
                 <p><strong>Total Fixed Project Costs:</strong> <span id="totalFixedCost">£0.00</span></p>
                 <p><strong>Total Variable Spending (Per Diem):</strong> <span id="totalVariableSpending">£0.00</span></p>
-                <h3 style="margin-top: 20px;">Add New Expense:</h3>
+                <h3>Add New Expense:</h3>
             </div>
             <form id="addExpenseForm" class="add-item-form">
                 <div class="input-group">
@@ -370,8 +366,7 @@
                 <button type="submit">Add Expense</button>
             </form>
             <div id="expense-list">
-                <h3 style="margin-top: 20px;">Expense Breakdown:</h3>
-                <!-- Expense items will be injected here by JS -->
+                <h3>Expense Breakdown:</h3>
             </div>
         </section>
 
@@ -395,8 +390,7 @@
                 </div>
                 <button type="submit">Add Gift</button>
             </form>
-            <ul id="souvenir-list" style="list-style-type: disc; padding-left: 20px; margin-top: 15px;">
-                <!-- Gift items will be injected here by JS -->
+            <ul id="souvenir-list">
             </ul>
 
             <h3 style="margin-top: 30px;">Office Contact Handoff:</h3>
@@ -433,7 +427,7 @@
             <h3>Security & Compliance Data:</h3>
             <div class="input-group">
                 <label for="passportNumber">Passport/Visa Number:</label>
-                <input type="text" id="passportNumber" placeholder="e.g., EU-123456789">
+                <input type="text" id="passportNumber" placeholder="e.g., GBR-123456789">
             </div>
             <div class="input-group">
                 <label for="passportExpiry">Visa/Passport Expiry Date:</label>
@@ -445,7 +439,7 @@
             </div>
             <div class="input-group">
                 <label for="localEmergency">Local Emergency/Tech Support Numbers:</label>
-                <textarea id="localEmergency" placeholder="Police, Ambulance, Milan Tech Support..."></textarea>
+                <textarea id="localEmergency" placeholder="Police, Ambulance, Berlin/Paris/Milan/Istanbul Tech Support..."></textarea>
             </div>
             <button id="saveDocuments">Save Documents</button>
 
@@ -453,16 +447,15 @@
             <form id="addImportantLinkForm" class="add-item-form">
                 <div class="input-group">
                     <label for="linkDescription">Description:</label>
-                    <input type="text" id="linkDescription" placeholder="e.g., Milan Venue Contract" required>
+                    <input type="text" id="linkDescription" placeholder="e.g., Louvre Security Contract" required>
                 </div>
                 <div class="input-group">
                     <label for="linkURL">URL:</label>
-                    <input type="url" id="linkURL" placeholder="https://milanevents.com/contract" required>
+                    <input type="url" id="linkURL" placeholder="https://secure.doc/louvre-contract" required>
                 </div>
                 <button type="submit">Add Link</button>
             </form>
-            <ul id="important-links-list" style="list-style-type: disc; padding-left: 20px; margin-top: 15px;">
-                <!-- Links will be injected here by JS -->
+            <ul id="important-links-list">
             </ul>
         </section>
 
@@ -482,182 +475,178 @@
     </div>
 
     <footer>
-        <p>© 2025 Global Logistics Planner Demo. Built by Empower Digital Solutions to manage complexity.</p>
+        <p>© 2025 Global Logistics Planner Demo. Built by Empower Digital Solutions.</p>
     </footer>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    // --- Firebase Configuration ---
-    // Mandatory Canvas Global Variables
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-    // Initialize Firebase Services
-    let app, db, auth;
-    try {
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-    } catch (e) {
-        console.error("Firebase initialization failed:", e);
-        if (e.code === 'duplicate-app') {
-            // This can happen in some hot-reload environments, try to get existing app
-            app = initializeApp(firebaseConfig, "default-logistics-app-" + Date.now());
-            db = getFirestore(app);
-            auth = getAuth(app);
-        } else {
-            alert("Could not connect to the database. Please check your connection.");
-        }
-    }
-
-    let travelPlanRef;
+<!--
+    This is the new, self-contained JavaScript for the demo.
+    It does NOT connect to Firebase. It just loads the mock data
+    and makes the page interactive.
+-->
+<script>
+    // --- Global Data Object ---
     let travelData = {};
-    let userId = null;
 
     // --- Data Initialization (Fictional Business Roadshow Data) ---
     function initializeDefaultData() {
         travelData = {
             itinerary: [
+                // Day 1: Glasgow -> London -> Berlin
                 {
                     type: 'travel',
-                    date: 'Monday, 10th November 2025',
-                    title: 'Travel: Glasgow to Berlin',
+                    date: '2026-03-10', // ISO format for easy sorting
+                    title: 'Departure: Glasgow to Berlin',
                     details: [
-                        { time: '07:00', description: 'Depart Glasgow (Car to GLA)' },
-                        { time: '11:15', description: 'Arrive London Stansted (STN)' },
-                        { time: '12:45', description: 'Flight Check-in: Berlin' },
-                        { time: '17:30', description: 'Arrive Berlin (BER), Transfer to Hotel' },
-                        { time: '18:30', description: 'Hotel Check-in: Hotel Adlon Kempinski' }
+                        { time: '06:00', description: 'Depart Home (Car to Glasgow Airport)' },
+                        { time: '06:45', description: 'Arrive GLA - Check-in & Security' },
                     ],
+                    flight: {
+                        number: 'BA1473', airline: 'British Airways', departure: 'Glasgow (GLA) 08:30', arrival: 'London (LHR) 09:55',
+                        confirmation: 'GLA99B', notes: 'Connection at LHR T5.'
+                    },
                     flights_connecting: [
                          {
-                            number: 'EZ321', airline: 'EasyJet', departure: 'Glasgow (GLA) 10:00', arrival: 'London (STN) 11:15',
-                            confirmation: 'EFGH34', notes: 'First leg, transfer at Stansted.'
+                            number: 'BA984', airline: 'British Airways', departure: 'London (LHR) 11:25', arrival: 'Berlin (BER) 14:15',
+                            confirmation: 'BER44A', notes: 'Business Class, Seat 2A.'
                         }
                     ],
-                    flight: {
-                        number: 'FR123', airline: 'Ryanair', departure: 'London (STN) 14:30', arrival: 'Berlin (BER) 17:15',
-                        confirmation: 'ABCD12', notes: 'Business Class, Window Seat. Prep for 9am conference.'
-                    },
+                    return_home: [ // Re-using this field for ground transport/hotel
+                        { time: '15:00', description: 'Taxi from BER to Hotel' },
+                        { time: '15:45', description: 'Check-in: Grand Hyatt Berlin (Conf: 99827-B)' }
+                    ]
                 },
+                // Day 2: Berlin Conference -> Paris
                 {
                     type: 'activity',
-                    date: 'Tuesday, 11th November 2025',
+                    date: '2026-03-11',
                     title: 'Berlin Conference & Travel to Paris',
                     details: [
-                        { time: '09:00', description: 'Keynote Conference: Berlin Tech Summit' },
-                        { time: '12:00', description: 'Conference Networking Lunch' },
-                        { time: '14:00', description: 'Depart Hotel to Berlin Airport (BER)' }
+                        { time: '09:00', description: 'Keynote Speech: Berlin Tech Conference' },
+                        { time: '12:00', description: 'Networking Lunch' },
+                        { time: '14:00', description: 'Depart Hotel (Taxi to BER)' },
                     ],
                     flight: {
-                        number: 'AF112', airline: 'Air France', departure: 'Berlin (BER) 16:30', arrival: 'Paris (CDG) 18:15',
-                        confirmation: 'IJKL56', notes: 'Morning flight to Paris.'
-                    }
-                },
-                {
-                    type: 'activity',
-                    date: 'Wednesday, 12th November 2025',
-                    title: 'Paris (Louvre) & Travel to Milan',
-                    details: [
-                        { time: '10:00', description: 'Meeting: Louvre (Stolen Jewels Security Strategy)' },
-                        { time: '13:00', description: 'Meeting Concludes' },
-                        { time: '13:30', description: 'Sightseeing & Decompression (Lunch, Eiffel Tower)' },
-                        { time: '18:00', description: 'Depart Hotel to Paris Orly (ORY)' },
-                        { time: '22:30', description: 'Arrive Milan (MXP), Transfer to Hotel' },
-                        { time: '23:30', description: 'Hotel Check-in: NH Collection Milano President' }
-                    ],
-                    flight: {
-                        number: 'EZ456', airline: 'EasyJet', departure: 'Paris (ORY) 20:45', arrival: 'Milan (MXP) 22:15',
-                        confirmation: 'MNOP78', notes: 'Night flight to Milan.'
-                    }
-                },
-                {
-                    type: 'activity',
-                    date: 'Thursday, 13th November 2025',
-                    title: 'Milan (Holiday/F1 Event)',
-                    details: [
-                        { time: '10:00', description: 'F1 Event: Monza Circuit (Track Day Experience)' },
-                        { time: '13:00', description: 'Lunch at Monza' },
-                        { time: '19:00', description: 'Team Dinner (Ferrari Team - Mock)' }
-                    ],
-                },
-                {
-                    type: 'activity',
-                    date: 'Friday, 14th November 2025',
-                    title: 'Milan (Holiday/F1 Event)',
-                    details: [
-                        { time: '11:00', description: 'Ferrari Museum Tour' },
-                        { time: '15:00', description: 'Decompression / Personal Time' },
-                        { time: '18:00', description: 'Prepare for next travel leg' }
-                    ],
-                },
-                {
-                    type: 'travel',
-                    date: 'Saturday, 15th November 2025',
-                    title: 'Travel: Milan to Istanbul',
-                    details: [
-                        { time: '09:00', description: 'Depart Hotel to Milan Airport (MXP)' },
-                        { time: '16:00', description: 'Arrive Istanbul (IST), Transfer to Hotel' },
-                        { time: '17:30', description: 'Hotel Check-in: CVK Park Bosphorus Hotel' }
-                    ],
-                    flight: {
-                        number: 'TK789', airline: 'Turkish Airlines', departure: 'Milan (MXP) 11:30', arrival: 'Istanbul (IST) 15:45',
-                        confirmation: 'QRST90', notes: 'Check dentistry appointment confirmation.'
-                    },
-                },
-                {
-                    type: 'activity',
-                    date: 'Sunday, 16th November 2025',
-                    title: 'Istanbul (Dentist & Football)',
-                    details: [
-                        { time: '10:00', description: 'Appointment: Dr. M Sahin (Dentistry)' },
-                        { time: '13:00', description: 'Lunch & Sightseeing (Grand Bazaar)' },
-                        { time: '18:00', description: 'Transfer to Stadium' },
-                        { time: '20:00', description: 'Football Match: Fenerbahce vs Galatasaray' }
-                    ],
-                },
-                {
-                    type: 'travel',
-                    date: 'Monday, 17th November 2025',
-                    title: 'Travel: Istanbul to Glasgow (Home)',
-                    details: [
-                        { time: '11:00', description: 'Check-out & Transfer to Airport (IST)' },
-                    ],
-                    flight: {
-                        number: 'TK1977', airline: 'Turkish Airlines', departure: 'Istanbul (IST) 14:00', arrival: 'Glasgow (GLA) 17:30',
-                        confirmation: 'UVWX12', notes: 'Direct flight home.'
+                        number: 'AF1135', airline: 'Air France', departure: 'Berlin (BER) 16:30', arrival: 'Paris (CDG) 18:20',
+                        confirmation: 'PAR22C', notes: 'Seat 5F. Prepare Louvre brief on flight.'
                     },
                     return_home: [
-                        { time: '18:30', description: 'Arrive Home' }
+                        { time: '19:00', description: 'Taxi from CDG to Hotel' },
+                        { time: '19:45', description: 'Check-in: Hotel Regina Louvre (Conf: 88162-P)' }
+                    ]
+                },
+                // Day 3: Paris Meeting & Milan Flight
+                {
+                    type: 'activity',
+                    date: '2026-03-12',
+                    title: 'Paris Meeting & Travel to Milan',
+                    details: [
+                        { time: '10:00', description: 'Meeting: CEO of the Louvre (Stolen Jewels Security Strategy)' },
+                        { time: '13:00', description: 'Meeting Concludes' },
+                        { time: '13:30', description: 'Sightseeing & Decompression (Lunch near Louvre)' },
+                        { time: '17:00', description: 'Depart Hotel (Taxi to CDG)' },
                     ],
+                    flight: {
+                        number: 'EZY4277', airline: 'EasyJet', departure: 'Paris (CDG) 19:10', arrival: 'Milan (MXP) 20:40',
+                        confirmation: 'MIL99X', notes: 'Holiday portion begins. F1 weekend!'
+                    },
+                    return_home: [
+                        { time: '21:30', description: 'Taxi from MXP to Hotel' },
+                        { time: '22:15', description: 'Check-in: Hotel Principe Di Savoia (Conf: 77251-M)' }
+                    ]
+                },
+                // Day 4-5: Milan (Holiday)
+                {
+                    type: 'activity',
+                    date: '2026-03-13',
+                    title: 'Milan - F1 Holiday',
+                    details: [
+                        { time: '10:00', description: 'F1 - Practice Day 1 at Monza' },
+                        { time: '18:00', description: 'Return to Hotel' },
+                    ]
+                },
+                {
+                    type: 'activity',
+                    date: '2026-03-14',
+                    title: 'Milan - F1 Holiday',
+                    details: [
+                        { time: '11:00', description: 'F1 - Qualifying Day at Monza' },
+                        { time: '19:00', description: 'Team Dinner' },
+                    ]
+                },
+                // Day 6: Milan -> Istanbul
+                {
+                    type: 'travel',
+                    date: '2026-03-15',
+                    title: 'Travel: Milan to Istanbul',
+                    details: [
+                        { time: '11:00', description: 'Check-out from Hotel' },
+                        { time: '11:30', description: 'Taxi to Milan Linate (LIN)' },
+                    ],
+                    flight: {
+                        number: 'TK1874', airline: 'Turkish Airlines', departure: 'Milan (LIN) 14:55', arrival: 'Istanbul (IST) 18:50',
+                        confirmation: 'IST55T', notes: 'Dental trip portion.'
+                    },
+                    return_home: [
+                        { time: '19:30', description: 'Taxi from IST to Hotel' },
+                        { time: '20:15', description: 'Check-in: CVK Park Bosphorus Hotel (Conf: 66142-I)' }
+                    ]
+                },
+                // Day 7: Istanbul (Dentist & Football)
+                {
+                    type: 'activity',
+                    date: '2026-03-16',
+                    title: 'Istanbul - Appointments',
+                    details: [
+                        { time: '10:00', description: 'Appointment: Dr M Sahin (Dentistry)' },
+                        { time: '13:00', description: 'Return to Hotel' },
+                        { time: '18:00', description: 'Depart for Stadium' },
+                        { time: '20:00', description: 'Football Match: Fenerbahce vs Galatasaray (Şükrü Saracoğlu Stadium)' },
+                    ]
+                },
+                // Day 8: Istanbul -> Glasgow
+                {
+                    type: 'travel',
+                    date: '2026-03-17',
+                    title: 'Return: Istanbul to Glasgow',
+                    details: [
+                        { time: '10:00', description: 'Check-out from Hotel' },
+                        { time: '10:30', description: 'Taxi to Istanbul (IST)' },
+                    ],
+                    flight: {
+                        number: 'TK1977', airline: 'Turkish Airlines', departure: 'Istanbul (IST) 13:30', arrival: 'Glasgow (GLA) 16:05',
+                        confirmation: 'GLA88Y', notes: 'Direct flight home. Project complete.'
+                    },
+                    return_home: [
+                        { time: '16:30', description: 'Arrive Home' },
+                        { time: '18:00', description: 'Submit expenses' }
+                    ]
                 }
             ],
             packingList: [
                 { item: 'Laptop & Charger', packed: false, category: 'tech' },
-                { item: 'Conference Presentation Files', packed: true, category: 'tech' }, // Set one to true for testing
-                { item: 'International Power Adapters', packed: false, category: 'tech' },
-                { item: 'Keynote Clicker', packed: false, category: 'tech' },
+                { item: 'Conference Presentation (USB)', packed: false, category: 'tech' },
+                { item: 'Louvre Security Brief (Printed)', packed: false, category: 'documents' },
+                { item: 'International Power Adapters (EU & TR)', packed: false, category: 'tech' },
+                { item: 'F1 Tickets (Digital)', packed: false, category: 'personal' },
+                { item: 'Football Tickets (Digital)', packed: false, category: 'personal' },
                 { item: 'Business Suits (2x)', packed: false, category: 'attire' },
                 { item: 'Client NDA Hard Copies', packed: false, category: 'documents' },
-                { item: 'Per Diem Cash (Euros)', packed: false, category: 'finance' },
+                { item: 'Per Diem Cash (Euros & Lira)', packed: false, category: 'finance' },
             ],
             budget: {
                 fixedCosts: [
-                    { description: 'Business Class Flights (LHR-BER-MXP-LHR)', amount: 1850.00, date: '2025-12-15' },
-                    { description: 'Milan Expo Hall Venue Deposit', amount: 500.00, date: '2026-01-20' },
-                    { description: 'Speaker Fees - External Keynote', amount: 1500.00, date: '2026-02-01' }
+                    { description: 'Multi-City Flights (GLA-BER-CDG-MXP-IST-GLA)', amount: 2450.00, date: '2026-01-15' },
+                    { description: 'Berlin Tech Conference Pass', amount: 800.00, date: '2026-01-20' },
+                    { description: 'F1 Weekend Pass (Monza)', amount: 650.00, date: '2026-02-01' },
+                    { description: 'Fenerbahce vs Galatasaray Ticket', amount: 120.00, date: '2026-02-05' }
                 ],
                 expenses: []
             },
             notes: {
-                general: 'Need to confirm AV setup details with Milan team lead by end of Monday. Backup presentation on USB.',
+                general: 'Need to confirm AV setup details with Berlin team. Backup presentation on USB. Confirm Louvre meeting point with CEO\'s assistant.',
                 souvenirs: [
-                    { item: 'Engraved pen for Tech Innovators CEO', budget: 50.00 },
-                    { item: 'Local wine for Munich team manager', budget: 35.00 }
+                    { item: 'Engraved pen for Louvre CEO', budget: 75.00 },
+                    { item: 'Small gift for Dr Sahin', budget: 30.00 }
                 ],
                 kiddoInfo: {
                     carerContact: 'Jane Smith (Office Manager), +44-20-7946-0958',
@@ -666,13 +655,14 @@
                     meals: { friday: 'Switch to backup server', saturday: 'Use encrypted chat channel', sunday: 'Call Jane\'s personal line' }
                 },
                 documentsAndLinks: {
-                    passportNumber: 'EU-99887766',
-                    passportExpiry: '2028-12-31',
-                    travelInsurance: 'Policy: GLOBAL-774. Contact: GlobalAssist, +44 141 555 1234',
-                    localEmergency: 'Police (112), Ambulance (112), Local Tech Support: 0049 30 12345',
+                    passportNumber: 'GBR-987654321',
+                    passportExpiry: '2030-05-20',
+                    travelInsurance: 'Policy: GLOBAL-CORP-99A. Contact: GlobalAssist, +44 141 555 1234',
+                    localEmergency: 'EU (112), Turkey (112). Local Tech Support: [Contact List]',
                     importantLinks: [
-                        { description: 'Hotel Booking Confirmation - Berlin', url: 'https://demo.hotelberlin.com' },
-                        { description: 'Signed Tech Innovators NDA', url: 'https://secure.doc.share/ti-nda' }
+                        { description: 'Hotel Booking Confirmation - Berlin', url: 'https://demo.hyatt.com/99827B' },
+                        { description: 'Louvre Security Brief (Secure)', url: 'https://secure.doc.share/louvre-brief' },
+                        { description: 'Dr Sahin Patient Portal', url: 'https://demo.drsahin.com/portal' }
                     ]
                 },
                 photos: []
@@ -681,69 +671,42 @@
     }
 
     // --- Helper Functions ---
-
-    // Function to save data to Firebase (using setDoc for explicit control)
-    async function saveDataToFirebase() {
-        if (!travelPlanRef) {
-            console.error("Firebase reference not set. Cannot save.");
-            return;
-        }
-        try {
-            // Save the entire travelData object
-            await setDoc(travelPlanRef, travelData);
-            // console.log("Data saved to Firestore!");
-        } catch (error) {
-            console.error("Error saving data to Firestore:", error);
-        }
+    
+    // Simple alert box for demo feedback
+    function showDemoAlert(message) {
+         const msgBox = document.createElement('div');
+         msgBox.style.position = 'fixed';
+         msgBox.style.top = '20px';
+         msgBox.style.left = '50%';
+         msgBox.style.transform = 'translateX(-50%)';
+         msgBox.style.padding = '16px';
+         msgBox.style.backgroundColor = 'var(--accent-turquoise)';
+         msgBox.style.color = 'white';
+         msgBox.style.borderRadius = '8px';
+         msgBox.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+         msgBox.style.zIndex = '1000';
+         msgBox.textContent = `Demo: ${message}`;
+         document.body.appendChild(msgBox);
+         setTimeout(() => { msgBox.remove(); }, 4000);
     }
-
-    // Function to handle the authentication and initial data load
-    async function handleAuthenticationAndLoad() {
-        try {
-            if (initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken);
-            } else {
-                await signInAnonymously(auth);
-            }
-            
-            userId = auth.currentUser?.uid;
-            
-            if (!userId) {
-                console.error("Authentication failed, user ID is null.");
-                return;
-            }
-            
-            // Define the document reference path using the mandatory structure
-            travelPlanRef = doc(db, 'artifacts', appId, 'users', userId, 'travel_plans', 'global_tech_summit_2026');
-
-            // Use onSnapshot for real-time updates
-            onSnapshot(travelPlanRef, (doc) => {
-                if (doc.exists()) {
-                    travelData = doc.data();
-                    // Ensure all nested objects exist to prevent errors
-                    if (!travelData.budget) travelData.budget = { fixedCosts: [], expenses: [] };
-                    if (!travelData.notes) travelData.notes = { general: '', souvenirs: [], kiddoInfo: { meals: {} }, documentsAndLinks: { importantLinks: [] }, photos: [] };
-                    if (!travelData.notes.kiddoInfo) travelData.notes.kiddoInfo = { meals: {} };
-                    if (!travelData.notes.documentsAndLinks) travelData.notes.documentsAndLinks = { importantLinks: [] };
-                    if (!travelData.packingList) travelData.packingList = [];
-                    if (!travelData.itinerary) travelData.itinerary = [];
-                    
-                    renderAllSections();
-                } else {
-                    initializeDefaultData(); // If no data, populate with initial details
-                    saveDataToFirebase(); // Save the defaults
-                }
-            }, (error) => {
-                console.error("Error setting up data listener:", error);
-            });
-
-        } catch (error) {
-            console.error("Authentication failed:", error);
-        }
+    
+    // Format date from 'YYYY-MM-DD' to 'Tuesday, 10th March 2026'
+    function formatFullDate(isoDate) {
+        const date = new Date(isoDate + 'T00:00:00'); // Ensure it's treated as local
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        // A wee trick to get "th, st, nd, rd"
+        const day = date.getDate();
+        let suffix = 'th';
+        if (day % 10 === 1 && day !== 11) suffix = 'st';
+        if (day % 10 === 2 && day !== 12) suffix = 'nd';
+        if (day % 10 === 3 && day !== 13) suffix = 'rd';
+        
+        const formatted = new Intl.DateTimeFormat('en-GB', options).format(date);
+        return formatted.replace(String(day), `${day}${suffix}`);
     }
 
 
-    // --- DOM Elements (shortened for brevity) ---
+    // --- DOM Elements ---
     const itineraryList = document.getElementById('itinerary-list');
     const packingChecklist = document.getElementById('packing-checklist');
     const addPackingItemForm = document.getElementById('addPackingItemForm');
@@ -772,11 +735,7 @@
     const uploadPhotosButton = document.getElementById('uploadPhotos');
     const photoGalleryDiv = document.getElementById('photo-gallery');
     const nextEventDiv = document.getElementById('nextEvent');
-    
-    // --- Dashboard Action Items ---
-    const dashboardSummaryDiv = document.getElementById('dashboard-summary');
-    const dashboardActionItemsUl = document.getElementById('dashboard-action-items');
-
+    const actionItemsList = document.getElementById('actionItemsList');
     const passportNumberInput = document.getElementById('passportNumber');
     const passportExpiryInput = document.getElementById('passportExpiry');
     const travelInsuranceTextarea = document.getElementById('travelInsurance');
@@ -786,48 +745,42 @@
     const linkDescriptionInput = document.getElementById('linkDescription');
     const linkURLInput = document.getElementById('linkURL');
     const importantLinksListUl = document.getElementById('important-links-list');
+    const addEventForm = document.getElementById('addEventForm');
 
-    // --- NEW --- Event Form Elements
-    const addItineraryForm = document.getElementById('addItineraryForm');
-    const newEventDateInput = document.getElementById('newEventDate');
-    const newEventTitleInput = document.getElementById('newEventTitle');
-    const newEventTimeInput = document.getElementById('newEventTime');
-    const newEventDescriptionInput = document.getElementById('newEventDescription');
-
-
-    // --- Rendering Functions (Simplified from original) ---
+    // --- Rendering Functions ---
 
     function renderItinerary() {
-        if (!itineraryList) return;
         itineraryList.innerHTML = '';
-        if (!travelData.itinerary) return;
+        
+        // Sort itinerary by date before rendering
+        travelData.itinerary.sort((a, b) => new Date(a.date) - new Date(b.date));
         
         travelData.itinerary.forEach(item => {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'itinerary-item';
 
-            let content = `<h3>${item.date} - ${item.title}</h3>`;
+            let content = `<h3>${formatFullDate(item.date)} - ${item.title}</h3>`;
 
             if (item.details) {
                 item.details.forEach(detail => {
                     content += `<p><strong>${detail.time}:</strong> ${detail.description}</p>`;
                 });
             }
+            if (item.flight) {
+                 content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">Flight Details:</p>
+                           <p style="font-size: 0.9em;"><strong>${item.flight.airline} ${item.flight.number}:</strong> ${item.flight.departure} to ${item.flight.arrival} | Conf: ${item.flight.confirmation}</p>
+                           <p style="font-size: 0.8em; color: #555;"><i>${item.flight.notes}</i></p>`;
+            }
             if (item.flights_connecting) {
                 item.flights_connecting.forEach(flight => {
-                    content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 8px;">Connecting Flight:</p>
-                                <p style="font-size: 0.9em;"><strong>${flight.airline} ${flight.number}:</strong> ${flight.departure} to ${flight.arrival}</p>`;
+                    content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">Connecting Flight:</p>
+                                <p style="font-size: 0.9em;"><strong>${flight.airline} ${flight.number}:</strong> ${flight.departure} to ${flight.arrival} | Conf: ${flight.confirmation}</p>
+                                <p style="font-size: 0.8em; color: #555;"><i>${flight.notes}</i></p>`;
                 });
             }
-            if (item.flight) {
-                 content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 8px;">Flight Details:</p>
-                                   <p style="font-size: 0.9em;"><strong>${item.flight.airline} ${item.flight.number}:</strong> ${item.flight.departure} to ${item.flight.arrival} | Confirmation: ${item.flight.confirmation}</p>`;
-            }
-
-            // Repurpose extra notes sections for the demo
-            if (item.return_home) {
-                content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 8px;">Logistics:</p>`;
-                item.return_home.forEach(detail => { content += `<p style="font-size: 0.9em;">${detail.description}</p>`; });
+            if (item.return_home) { // Re-using this for ground transport
+                content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">Ground Logistics:</p>`;
+                item.return_home.forEach(detail => { content += `<p style="font-size: 0.9em;"><strong>${detail.time}:</strong> ${detail.description}</p>`; });
             }
 
             itemDiv.innerHTML = content;
@@ -837,10 +790,7 @@
     }
 
     function renderPackingList() {
-        if (!packingChecklist) return;
         packingChecklist.innerHTML = '';
-        if (!travelData.packingList) return;
-
         travelData.packingList.forEach((item, index) => {
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
@@ -849,8 +799,8 @@
             checkbox.dataset.index = index;
             checkbox.addEventListener('change', (e) => {
                 travelData.packingList[e.target.dataset.index].packed = e.target.checked;
-                saveDataToFirebase();
-                updateDashboard(); // Re-run dashboard logic to update action items
+                showDemoAlert('Packing list updated.');
+                renderAllSections(); // Re-render to update dashboard
             });
 
             const span = document.createElement('span');
@@ -862,16 +812,16 @@
 
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'X';
-            deleteBtn.style.marginLeft = 'auto'; // Pushes button to the right
+            deleteBtn.style.marginLeft = 'auto'; // Push button to the right
             deleteBtn.style.backgroundColor = '#dc3545';
             deleteBtn.style.padding = '5px 10px';
             deleteBtn.style.fontSize = '0.8em';
             deleteBtn.style.borderRadius = '5px';
-            deleteBtn.style.marginTop = '0';
             deleteBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 travelData.packingList.splice(index, 1);
-                saveDataToFirebase();
+                showDemoAlert('Item removed from packing list.');
+                renderAllSections(); // Re-render all
             });
 
             label.appendChild(checkbox);
@@ -879,13 +829,12 @@
             label.appendChild(deleteBtn);
             packingChecklist.appendChild(label);
         });
+        updateDashboard(); // Update dashboard action items
     }
 
     function renderBudget() {
-        if (!totalFixedCostSpan || !expenseListDiv) return;
-
         let totalFixed = 0;
-        (travelData.budget.fixedCosts || []).forEach(cost => { totalFixed += cost.amount; });
+        travelData.budget.fixedCosts.forEach(cost => { totalFixed += cost.amount; });
         totalFixedCostSpan.textContent = `£${totalFixed.toFixed(2)}`;
 
         let totalVariable = 0;
@@ -896,16 +845,15 @@
             expenseItem.className = 'expense-item';
             const categoryDisplay = listType === 'fixed' ? 'Fixed Project Cost' : expense.category;
             
-            expenseItem.innerHTML = `<p style="display: flex; justify-content: space-between; align-items: center; width: 100%;"><span><strong>${expense.description}</strong> - £${expense.amount.toFixed(2)} (${categoryDisplay})</span></p>`;
+            expenseItem.innerHTML = `<p><strong>${expense.description}</strong> - £${expense.amount.toFixed(2)} (${categoryDisplay})</p>`;
             
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'X';
-            // deleteBtn.style.marginLeft = 'auto'; // Handled by flex
+            deleteBtn.style.marginLeft = 'auto';
             deleteBtn.style.backgroundColor = '#dc3545';
             deleteBtn.style.padding = '5px 10px';
             deleteBtn.style.fontSize = '0.8em';
             deleteBtn.style.borderRadius = '5px';
-            deleteBtn.style.marginTop = '0'; // Override button default
             
             deleteBtn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -914,15 +862,16 @@
                 } else {
                     travelData.budget.expenses.splice(index, 1);
                 }
-                saveDataToFirebase();
+                showDemoAlert('Expense removed.');
+                renderBudget(); // Just re-render this section
             });
-            expenseItem.querySelector('p').appendChild(deleteBtn);
+            expenseItem.appendChild(deleteBtn);
             expenseListDiv.appendChild(expenseItem);
         };
 
-        (travelData.budget.fixedCosts || []).forEach((expense, index) => renderExpenseItem(expense, index, 'fixed'));
+        travelData.budget.fixedCosts.forEach((expense, index) => renderExpenseItem(expense, index, 'fixed'));
         
-        (travelData.budget.expenses || []).forEach((expense, index) => {
+        travelData.budget.expenses.forEach((expense, index) => {
             totalVariable += expense.amount;
             renderExpenseItem(expense, index, 'variable');
         });
@@ -931,28 +880,23 @@
     }
 
     function renderNotes() {
-        if (!generalNotesTextarea || !souvenirListUl) return;
-
-        generalNotesTextarea.value = travelData.notes.general || '';
-        carerContactInput.value = travelData.notes.kiddoInfo?.carerContact || '';
-        kidsAllergiesTextarea.value = travelData.notes.kiddoInfo?.allergies || '';
-        kidsRoutineTextarea.value = travelData.notes.kiddoInfo?.routine || '';
-        mealFridayInput.value = travelData.notes.kiddoInfo?.meals?.friday || '';
-        mealSaturdayInput.value = travelData.notes.kiddoInfo?.meals?.saturday || '';
-        mealSundayInput.value = travelData.notes.kiddoInfo?.meals?.sunday || '';
+        generalNotesTextarea.value = travelData.notes.general;
+        carerContactInput.value = travelData.notes.kiddoInfo.carerContact;
+        kidsAllergiesTextarea.value = travelData.notes.kiddoInfo.allergies;
+        kidsRoutineTextarea.value = travelData.notes.kiddoInfo.routine;
+        mealFridayInput.value = travelData.notes.kiddoInfo.meals.friday;
+        mealSaturdayInput.value = travelData.notes.kiddoInfo.meals.saturday;
+        mealSundayInput.value = travelData.notes.kiddoInfo.meals.sunday;
 
         souvenirListUl.innerHTML = '';
-        (travelData.notes.souvenirs || []).forEach((souvenir, index) => {
+        travelData.notes.souvenirs.forEach((souvenir, index) => {
             const li = document.createElement('li');
             li.style.display = 'flex';
             li.style.justifyContent = 'space-between';
             li.style.alignItems = 'center';
             li.style.marginBottom = '5px';
+            li.innerHTML = `<span>${souvenir.item} (£${souvenir.budget ? souvenir.budget.toFixed(2) : 'N/A'})</span>`;
             
-            const text = document.createElement('span');
-            text.textContent = `${souvenir.item} (£${souvenir.budget ? souvenir.budget.toFixed(2) : 'N/A'})`;
-            li.appendChild(text);
-
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'X';
             deleteBtn.style.backgroundColor = '#dc3545';
@@ -960,10 +904,10 @@
             deleteBtn.style.fontSize = '0.7em';
             deleteBtn.style.marginLeft = '10px';
             deleteBtn.style.borderRadius = '3px';
-            deleteBtn.style.marginTop = '0';
             deleteBtn.addEventListener('click', () => {
                 travelData.notes.souvenirs.splice(index, 1);
-                saveDataToFirebase();
+                showDemoAlert('Gift idea removed.');
+                renderNotes();
             });
             li.appendChild(deleteBtn);
             souvenirListUl.appendChild(li);
@@ -971,8 +915,6 @@
     }
     
     function renderDocumentsAndLinks() {
-        if (!passportNumberInput || !importantLinksListUl) return;
-
         // Populate form fields
         passportNumberInput.value = travelData.notes.documentsAndLinks?.passportNumber || '';
         passportExpiryInput.value = travelData.notes.documentsAndLinks?.passportExpiry || '';
@@ -987,8 +929,8 @@
             li.style.justifyContent = 'space-between';
             li.style.alignItems = 'center';
             li.style.marginBottom = '5px';
-
-            li.innerHTML = `<a href="${link.url}" target="_blank" style="color: var(--primary-blue); font-weight: bold;">${link.description}</a>`;
+            li.innerHTML = `<a href="${link.url}" target="_blank" style="color: var(--primary-blue); font-weight: bold; word-break: break-all;">${link.description}</a>`;
+            
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'X';
             deleteBtn.style.backgroundColor = '#dc3545';
@@ -996,10 +938,10 @@
             deleteBtn.style.fontSize = '0.7em';
             deleteBtn.style.marginLeft = '10px';
             deleteBtn.style.borderRadius = '3px';
-            deleteBtn.style.marginTop = '0';
             deleteBtn.addEventListener('click', () => {
                 travelData.notes.documentsAndLinks.importantLinks.splice(index, 1);
-                saveDataToFirebase();
+                showDemoAlert('Link removed.');
+                renderDocumentsAndLinks();
             });
             li.appendChild(deleteBtn);
             importantLinksListUl.appendChild(li);
@@ -1007,77 +949,58 @@
     }
     
     function renderPhotos() {
-        if (!photoGalleryDiv) return;
         photoGalleryDiv.innerHTML = '<p>No photos uploaded yet. Use this space for venue shots or equipment inventory!</p>';
     }
     
     // --- Dashboard Update (uses data from the live itinerary) ---
     function updateDashboard() {
-        if (!nextEventDiv || !dashboardActionItemsUl || !travelData.itinerary) return;
-
-        // --- Find Next Event ---
         const now = new Date();
         const allEventsWithTimes = [];
 
+        // Combine all event details into a flat array for easy sorting
         travelData.itinerary.forEach(day => {
-            if (!day.date) return;
-            const baseDate = new Date(day.date);
-            if (isNaN(baseDate.getTime())) return; // Invalid date
+            const baseDateStr = day.date;
             
-            const extractEvents = (detailsArray, prefix = '') => {
+            const extractEvents = (detailsArray) => {
                 (detailsArray || []).forEach(detail => {
-                    // Updated REGEX to parse 24-hour time
-                    const timeParts = detail.time.match(/(\d{1,2}):(\d{2})/i);
-                    if (timeParts) {
-                        let hours = parseInt(timeParts[1]);
-                        const minutes = parseInt(timeParts[2]);
-
-                        // No AM/PM logic needed
-                        const eventDateTime = new Date(baseDate);
-                        eventDateTime.setHours(hours, minutes, 0, 0);
+                    if (detail.time) {
+                        const eventDateTime = new Date(`${baseDateStr}T${detail.time}:00`);
                         allEventsWithTimes.push({
-                            title: `${prefix}${day.title} - ${detail.description}`,
+                            title: `${day.title} - ${detail.description}`,
                             dateTime: eventDateTime
                         });
                     }
                 });
             };
-
+            
             extractEvents(day.details);
-            extractEvents(day.return_home, 'Logistics: ');
+            extractEvents(day.return_home); // For ground transport
         });
 
+        // Sort all events by time
         allEventsWithTimes.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
+
+        // Find the next upcoming event
         const nextEvent = allEventsWithTimes.find(event => event.dateTime.getTime() > now.getTime());
 
         if (nextEvent) {
-            nextEventDiv.textContent = `Next Up: ${nextEvent.title}`;
+            const formattedDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(nextEvent.dateTime);
+            nextEventDiv.innerHTML = `Next Up: <span style="color: #333;">${nextEvent.title} (${formattedDate})</span>`;
         } else {
             nextEventDiv.textContent = "Project Roadshow Complete!";
         }
-
-        // --- Populate Action Items ---
-        dashboardActionItemsUl.innerHTML = ''; // Clear existing
-        const actionItems = (travelData.packingList || []).filter(item => !item.packed);
         
-        if (actionItems.length === 0) {
-            const li = document.createElement('li');
-            li.textContent = "All items packed. You're good to go!";
-            li.style.color = 'var(--accent-turquoise)';
-            dashboardActionItemsUl.appendChild(li);
+        // Update Action Items
+        actionItemsList.innerHTML = '';
+        const unpackedItems = travelData.packingList.filter(item => !item.packed);
+        if (unpackedItems.length === 0) {
+            actionItemsList.innerHTML = '<li style="background-color: #d4edda; color: #155724;">All items packed!</li>';
         } else {
-            // Show the first 3 action items
-            actionItems.slice(0, 3).forEach(item => {
+             unpackedItems.slice(0, 3).forEach(item => { // Show first 3
                 const li = document.createElement('li');
-                li.textContent = item.item;
-                dashboardActionItemsUl.appendChild(li);
+                li.textContent = `Pack: ${item.item}`;
+                actionItemsList.appendChild(li);
             });
-            if (actionItems.length > 3) {
-                const li = document.createElement('li');
-                li.textContent = `...and ${actionItems.length - 3} more.`;
-                li.style.fontStyle = 'italic';
-                dashboardActionItemsUl.appendChild(li);
-            }
         }
     }
 
@@ -1089,193 +1012,134 @@
         renderBudget();
         renderNotes();
         renderDocumentsAndLinks();
-        renderPhotos(); // This remains a dummy/mockup display for safety
-        updateDashboard(); // updateDashboard is called by renderItinerary, but we call it again for safety
+        renderPhotos(); // This remains a dummy/mockup display
+        updateDashboard(); // This is called inside renderItinerary/renderPackingList, but good to have here
     }
 
     // --- Event Listeners ---
-    function setupEventListeners() {
-
-        // --- NEW --- Add Itinerary Event
-        if (addItineraryForm) {
-            addItineraryForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                const dateVal = newEventDateInput.value;
-                const titleVal = newEventTitleInput.value.trim();
-                const timeVal = newEventTimeInput.value; // Already HH:mm
-                const descVal = newEventDescriptionInput.value.trim();
-
-                if (dateVal && titleVal && timeVal && descVal) {
-                    // Format the date to match the existing data structure
-                    const dateObj = new Date(dateVal);
-                    // Adjust for timezone offset to prevent day-before issues
-                    const utcDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000);
-                    const formattedDate = utcDate.toLocaleDateString('en-GB', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-
-                    // Create a new itinerary item
-                    const newItineraryItem = {
-                        type: 'activity', // Default to 'activity' for simplicity
-                        date: formattedDate,
-                        title: titleVal,
-                        details: [
-                            { time: timeVal, description: descVal } // Use 24-hr time directly
-                        ]
-                        // Not including flight/complex data for this simple add
-                    };
-
-                    // Add to the main data object
-                    travelData.itinerary.push(newItineraryItem);
-                    
-                    // Sort the itinerary by date after adding
-                    travelData.itinerary.sort((a, b) => {
-                        const dateA = new Date(a.date).getTime();
-                        const dateB = new Date(b.date).getTime();
-                        if (isNaN(dateA) || isNaN(dateB)) return 0;
-                        return dateA - dateB;
-                    });
-
-                    // Save to Firebase
-                    saveDataToFirebase();
-
-                    // Clear the form
-                    addItineraryForm.reset();
-                }
-            });
-        }
+    
+    // Run all the setup logic when the page is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Add Event
+        addEventForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newEvent = {
+                type: 'activity', // Default type
+                date: document.getElementById('eventDate').value,
+                title: document.getElementById('eventTitle').value,
+                details: [
+                    {
+                        time: document.getElementById('eventTime').value,
+                        description: document.getElementById('eventDescription').value
+                    }
+                ]
+            };
+            travelData.itinerary.push(newEvent);
+            showDemoAlert('New event added to itinerary.');
+            renderItinerary(); // Re-sort and re-render
+            addEventForm.reset();
+        });
 
         // Packing List
-        if (addPackingItemForm) {
-            addPackingItemForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const newItem = newPackingItemInput.value.trim();
-                if (newItem) {
-                    travelData.packingList.push({ item: newItem, packed: false, category: 'custom' });
-                    newPackingItemInput.value = '';
-                    saveDataToFirebase();
-                }
-            });
-        }
+        addPackingItemForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newItem = newPackingItemInput.value.trim();
+            if (newItem) {
+                travelData.packingList.push({ item: newItem, packed: false, category: 'custom' });
+                newPackingItemInput.value = '';
+                showDemoAlert('Item added to packing list.');
+                renderPackingList();
+            }
+        });
 
         // Budget Tracker
-        if (addExpenseForm) {
-            addExpenseForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const description = expenseDescriptionInput.value.trim();
-                const amount = parseFloat(expenseAmountInput.value);
-                const category = expenseCategorySelect.value;
+        addExpenseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const description = expenseDescriptionInput.value.trim();
+            const amount = parseFloat(expenseAmountInput.value);
+            const category = expenseCategorySelect.value;
 
-                if (description && !isNaN(amount) && category) {
-                    if (category === 'fixed') {
-                        travelData.budget.fixedCosts.push({ description, amount, date: new Date().toISOString().split('T')[0] });
-                    } else {
-                        travelData.budget.expenses.push({ description, amount, category, date: new Date().toISOString().split('T')[0] });
-                    }
-                    expenseDescriptionInput.value = '';
-                    expenseAmountInput.value = '';
-                    expenseCategorySelect.value = '';
-                    saveDataToFirebase();
+            if (description && !isNaN(amount) && category) {
+                if (category === 'fixed') {
+                    travelData.budget.fixedCosts.push({ description, amount, date: new Date().toISOString().split('T')[0] });
+                } else {
+                    travelData.budget.expenses.push({ description, amount, category, date: new Date().toISOString().split('T')[0] });
                 }
-            });
-        }
+                expenseDescriptionInput.value = '';
+                expenseAmountInput.value = '';
+                expenseCategorySelect.value = '';
+                showDemoAlert('Expense added.');
+                renderBudget();
+            }
+        });
 
-        // Notes & Kiddo Info
-        if (saveNotesButton) {
-            saveNotesButton.addEventListener('click', () => {
-                travelData.notes.general = generalNotesTextarea.value.trim();
-                saveDataToFirebase();
-            });
-        }
+        // Notes & Handoff Info
+        saveNotesButton.addEventListener('click', () => {
+            travelData.notes.general = generalNotesTextarea.value.trim();
+            showDemoAlert('General notes saved.');
+        });
 
-        if (addSouvenirForm) {
-            addSouvenirForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const item = newSouvenirInput.value.trim();
-                const budget = parseFloat(souvenirBudgetInput.value);
-                if (item) {
-                    travelData.notes.souvenirs.push({ item, budget: isNaN(budget) ? null : budget });
-                    newSouvenirInput.value = '';
-                    souvenirBudgetInput.value = '';
-                    saveDataToFirebase();
-                }
-            });
-        }
+        addSouvenirForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const item = newSouvenirInput.value.trim();
+            const budget = parseFloat(souvenirBudgetInput.value);
+            if (item) {
+                travelData.notes.souvenirs.push({ item, budget: isNaN(budget) ? null : budget });
+                newSouvenirInput.value = '';
+                souvenirBudgetInput.value = '';
+                showDemoAlert('Gift idea added.');
+                renderNotes();
+            }
+        });
 
-        if (saveKiddoInfoButton) {
-            saveKiddoInfoButton.addEventListener('click', () => {
-                // Repurposed field names
-                travelData.notes.kiddoInfo.carerContact = carerContactInput.value.trim();
-                travelData.notes.kiddoInfo.allergies = kidsAllergiesTextarea.value.trim();
-                travelData.notes.kiddoInfo.routine = kidsRoutineTextarea.value.trim();
-                travelData.notes.kiddoInfo.meals.friday = mealFridayInput.value.trim();
-                travelData.notes.kiddoInfo.meals.saturday = mealSaturdayInput.value.trim();
-                travelData.notes.kiddoInfo.meals.sunday = mealSundayInput.value.trim();
-                saveDataToFirebase();
-            });
-        }
+        saveKiddoInfoButton.addEventListener('click', () => {
+            travelData.notes.kiddoInfo.carerContact = carerContactInput.value.trim();
+            travelData.notes.kiddoInfo.allergies = kidsAllergiesTextarea.value.trim();
+            travelData.notes.kiddoInfo.routine = kidsRoutineTextarea.value.trim();
+            travelData.notes.kiddoInfo.meals.friday = mealFridayInput.value.trim();
+            travelData.notes.kiddoInfo.meals.saturday = mealSaturdayInput.value.trim();
+            travelData.notes.kiddoInfo.meals.sunday = mealSundayInput.value.trim();
+            showDemoAlert('Handoff details saved.');
+        });
 
-        // Photo Upload (Client-side display only for this self-contained file)
-        if (uploadPhotosButton) {
-            uploadPhotosButton.addEventListener('click', () => {
-                const msgBox = document.createElement('div');
-                msgBox.style.position = 'fixed';
-                msgBox.style.top = '20px';
-                msgBox.style.left = '50%';
-                msgBox.style.transform = 'translateX(-50%)';
-                msgBox.style.padding = '16px';
-                msgBox.style.backgroundColor = 'var(--accent-turquoise)';
-                msgBox.style.color = 'white';
-                msgBox.style.borderRadius = '8px';
-                msgBox.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-                msgBox.style.zIndex = '1000';
-                msgBox.textContent = 'Demo: Photo storage is disabled in this public version for security.';
-                document.body.appendChild(msgBox);
-                setTimeout(() => { msgBox.remove(); }, 4000);
-            });
-        }
+        // Photo Upload (Demo alert only)
+        uploadPhotosButton.addEventListener('click', () => {
+              showDemoAlert('Photo storage is disabled in this public demo.');
+        });
 
         // Documents & Links
-        if (saveDocumentsButton) {
-            saveDocumentsButton.addEventListener('click', () => {
-                travelData.notes.documentsAndLinks.passportNumber = passportNumberInput.value.trim();
-                travelData.notes.documentsAndLinks.passportExpiry = passportExpiryInput.value.trim();
-                travelData.notes.documentsAndLinks.travelInsurance = travelInsuranceTextarea.value.trim();
-                travelData.notes.documentsAndLinks.localEmergency = localEmergencyTextarea.value.trim();
-                saveDataToFirebase();
-            });
-        }
+        saveDocumentsButton.addEventListener('click', () => {
+            travelData.notes.documentsAndLinks.passportNumber = passportNumberInput.value.trim();
+            travelData.notes.documentsAndLinks.passportExpiry = passportExpiryInput.value.trim();
+            travelData.notes.documentsAndLinks.travelInsurance = travelInsuranceTextarea.value.trim();
+            travelData.notes.documentsAndLinks.localEmergency = localEmergencyTextarea.value.trim();
+            showDemoAlert('Security documents saved.');
+        });
 
-        if (addImportantLinkForm) {
-            addImportantLinkForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const description = linkDescriptionInput.value.trim();
-                const url = linkURLInput.value.trim();
-                if (description && url) {
-                    if (!travelData.notes.documentsAndLinks.importantLinks) {
-                        travelData.notes.documentsAndLinks.importantLinks = [];
-                    }
-                    travelData.notes.documentsAndLinks.importantLinks.push({ description, url });
-                    linkDescriptionInput.value = '';
-                    linkURLInput.value = '';
-                    saveDataToFirebase();
+        addImportantLinkForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const description = linkDescriptionInput.value.trim();
+            const url = linkURLInput.value.trim();
+            if (description && url) {
+                if (!travelData.notes.documentsAndLinks.importantLinks) {
+                     travelData.notes.documentsAndLinks.importantLinks = [];
                 }
-            });
-        }
-    }
-    
-    // --- Initial Load ---
-    document.addEventListener('DOMContentLoaded', () => {
-        setupEventListeners();
-        handleAuthenticationAndLoad();
-        // Removed the setInterval for dashboard update, it's now called by render functions
-    });
+                travelData.notes.documentsAndLinks.importantLinks.push({ description, url });
+                linkDescriptionInput.value = '';
+                linkURLInput.value = '';
+                showDemoAlert('Important link added.');
+                renderDocumentsAndLinks();
+            }
+        });
 
+        // --- Initial Load ---
+        initializeDefaultData();
+        renderAllSections();
+        
+    });
 </script>
 </body>
 </html>
+
 
