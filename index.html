@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Logistics Planner - Tech Summit Roadshow</title>
+    
+    <!-- Removed old fonts, Added new 'Inter' font for a clean, corporate feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"></script>
+    <style>
+        :root {
+            /* Corporate/Global Theme */
+            --primary-blue: #004d99; /* Deep Corporate Blue */
+            --secondary-sand: #e9ecef; /* Light Grey/Office */
+            --accent-turquoise: #00a896; /* Teal Accent */
+            --accent-orange: #f94144; /* Alert Red */
+            --accent-white: #f8f8f8;
+            --dark-text: #333;
+            --light-text: #f0f0f0;
+            --section-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(0, 77, 153, 0.9);
+            --footer-bg: rgba(51, 51, 51, 0.8);
+        }
+
+        body {
+            /* Changed font */
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #004d99, #0077b6);
+            color: var(--dark-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            
+            /* Removed the placeholder map image */
+            /* background-image: url('https://placehold.co/1920x1080/333333/FFFFFF?text=Global+Logistics+Map'); */
+            
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            /* Changed font */
+            font-family: 'Inter', sans-serif; /* Switched to Inter for corporate feel */
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        /* Changed h1 font */
+        h1 { font-size: 2.8em; color: var(--light-text); text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-family: 'Inter', sans-serif; }
+        h2 { font-size: 2.2em; color: var(--primary-blue); }
+        h3 { font-size: 1.8em; color: var(--dark-text); }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--section-bg);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            flex-grow: 1;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--light-text);
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: rgba(51, 51, 51, 0.8);
+            padding: 10px 0;
+            border-radius: 10px;
+            margin: 10px auto;
+            max-width: 800px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap; /* Added for better mobile wrapping */
+        }
+        nav a {
+            color: var(--light-text);
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 5px; /* Added margin for wrapping */
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+        nav a:hover {
+            background-color: var(--accent-turquoise);
+        }
+
+        section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: var(--secondary-sand);
+            border-radius: 10px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+        section h2 {
+            /* Changed font */
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-align: left;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .itinerary-item, .packing-item, .expense-item, .note-item {
+            background-color: var(--accent-white);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .itinerary-item strong, .packing-item strong, .expense-item strong {
+            color: var(--primary-blue);
+        }
+
+        .checklist label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .checklist input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.5);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--dark-text);
+        }
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group input[type="datetime-local"],
+        .input-group input[type="date"], /* Added rule for date input */
+        .input-group input[type="time"], /* Added rule for time input */
+        .input-group textarea,
+        .input-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+             /* Changed font */
+            font-family: 'Inter', sans-serif;
+        }
+        .input-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        button {
+            background-color: var(--primary-blue);
+            color: var(--light-text);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 10px;
+             /* Changed font */
+            font-family: 'Inter', sans-serif;
+        }
+        button:hover {
+            background-color: var(--accent-turquoise);
+            transform: translateY(-2px);
+        }
+
+        .add-item-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        }
+        @media (min-width: 768px) {
+            .add-item-form {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+        .add-item-form button {
+            grid-column: span 1;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .photo-gallery img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            background-color: var(--footer-bg);
+            color: var(--light-text);
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 30px;
+            box-shadow: 0 -4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Dashboard action items list */
+        #dashboard-action-items {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+         #dashboard-action-items li {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+         }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 15px;
+            }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.8em; }
+            nav { flex-direction: column; align-items: center; } /* Center links */
+            nav a { margin: 5px 0; width: 90%; text-align: center;}
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Global Logistics Planner</h1>
+    </header>
+
+    <nav>
+        <a href="#itinerary">Itinerary</a>
+        <a href="#packing">Kit List</a>
+        <a href="#budget">Budget</a>
+        <a href="#notes">Delegated Tasks</a>
+        <a href="#documents">Security & Docs</a>
+        <a href="#photos">Project Assets</a>
+    </nav>
+
+    <div class="container">
+        <section id="dashboard">
+            <h2>Project Dashboard</h2>
+            <p>Welcome, Alex. Project Roadshow status:</p>
+            <div id="nextEvent" style="font-size: 1.2em; font-weight: bold; margin-top: 15px; color: var(--accent-orange);">Loading next event...</div>
+            
+            <!-- This div will be populated by the new dashboard logic -->
+            <div id="dashboard-summary">
+                <h3 style="text-align: left; margin-top: 20px; color: var(--primary-blue);">Action Items:</h3>
+                <ul id="dashboard-action-items">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- === NEW SECTION === -->
+        <section id="add-event">
+            <h2>Add New Itinerary Event</h2>
+            <p>Add a new item to the roadshow schedule. This will appear in the main itinerary list below.</p>
+            <form id="addItineraryForm" class="add-item-form">
+                <div class="input-group">
+                    <label for="newEventDate">Date:</label>
+                    <input type="date" id="newEventDate" required>
+                </div>
+                <div class="input-group">
+                    <label for="newEventTitle">Event Title:</label>
+                    <input type="text" id="newEventTitle" placeholder="e.g., Client Dinner, Venue Setup" required>
+                </div>
+                <div class="input-group">
+                    <label for="newEventTime">Time (24-hr):</label>
+                    <input type="time" id="newEventTime" required>
+                </div>
+                <div class="input-group">
+                    <label for="newEventDescription">Description/Details:</label>
+                    <input type="text" id="newEventDescription" placeholder="e.g., Meet at The Shard" required>
+                </div>
+                <button type="submit" style="grid-column: 1 / -1;">Add Event to Itinerary</button>
+            </form>
+        </section>
+        <!-- === END NEW SECTION === -->
+
+        <section id="itinerary">
+            <h2>The European Roadshow Itinerary</h2>
+            <div id="itinerary-list">
+                <!-- Itinerary items will be injected here by JS -->
+            </div>
+        </section>
+
+        <section id="packing">
+            <h2>Essential Kit List (Assets & Tech)</h2>
+            <form id="addPackingItemForm" class="add-item-form">
+                <div class="input-group">
+                    <label for="newPackingItem">Add Item:</label>
+                    <input type="text" id="newPackingItem" placeholder="e.g., Presentation Clicker, Client Gifts" required>
+                </div>
+                <button type="submit">Add to List</button>
+            </form>
+            <div id="packing-checklist" class="checklist">
+                <!-- Packing list items will be injected here by JS -->
+            </div>
+            <p style="margin-top: 20px; font-weight: bold; color: var(--accent-orange);">
+                *Remember to check local power adapter requirements for Milan!*
+            </p>
+        </section>
+
+        <section id="budget">
+            <h2>Project Budget Tracker</h2>
+            <div id="budget-summary">
+                <p><strong>Total Fixed Project Costs:</strong> <span id="totalFixedCost">£0.00</span></p>
+                <p><strong>Total Variable Spending (Per Diem):</strong> <span id="totalVariableSpending">£0.00</span></p>
+                <h3 style="margin-top: 20px;">Add New Expense:</h3>
+            </div>
+            <form id="addExpenseForm" class="add-item-form">
+                <div class="input-group">
+                    <label for="expenseDescription">Description:</label>
+                    <input type="text" id="expenseDescription" placeholder="e.g., Team Dinner, Cab to Venue" required>
+                </div>
+                <div class="input-group">
+                    <label for="expenseAmount">Amount (£):</label>
+                    <input type="number" id="expenseAmount" step="0.01" min="0" required>
+                </div>
+                <div class="input-group">
+                    <label for="expenseCategory">Category:</label>
+                    <select id="expenseCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="fixed">Fixed Cost (e.g., Flights, Venue)</option>
+                        <option value="meals">Client Meals & Drinks</option>
+                        <option value="shopping">Office Supplies / Gifts</option>
+                        <option value="activities">Networking Activities</option>
+                        <option value="transport">Local Transport</option>
+                        <option value="miscellaneous">Miscellaneous</option>
+                    </select>
+                </div>
+                <button type="submit">Add Expense</button>
+            </form>
+            <div id="expense-list">
+                <h3 style="margin-top: 20px;">Expense Breakdown:</h3>
+                <!-- Expense items will be injected here by JS -->
+            </div>
+        </section>
+
+        <section id="notes">
+            <h2>Delegated Tasks & Office Handoff</h2>
+            <div class="input-group">
+                <label for="generalNotes">Office/Internal Notes:</label>
+                <textarea id="generalNotes" placeholder="Jot down any office handover items..."></textarea>
+                <button id="saveNotes">Save Notes</button>
+            </div>
+
+            <h3 style="margin-top: 30px;">Client Gift Ideas:</h3>
+            <form id="addSouvenirForm" class="add-item-form">
+                <div class="input-group">
+                    <label for="newSouvenir">Gift Idea:</label>
+                    <input type="text" id="newSouvenir" placeholder="e.g., Engraved pen for CEO" required>
+                </div>
+                <div class="input-group">
+                    <label for="souvenirBudget">Budget (£):</label>
+                    <input type="number" id="souvenirBudget" step="0.01" min="0" placeholder="e.g., 50.00">
+                </div>
+                <button type="submit">Add Gift</button>
+            </form>
+            <ul id="souvenir-list" style="list-style-type: disc; padding-left: 20px; margin-top: 15px;">
+                <!-- Gift items will be injected here by JS -->
+            </ul>
+
+            <h3 style="margin-top: 30px;">Office Contact Handoff:</h3>
+            <div class="input-group">
+                <label for="carerContact">Emergency Escalation Contact:</label>
+                <input type="text" id="carerContact" placeholder="Name, Phone Number (e.g., Manager Jane Smith)">
+            </div>
+            <div class="input-group">
+                <label for="kidsAllergies">Key Login/Access Details (Secure):</label>
+                <textarea id="kidsAllergies" placeholder="e.g., VPN login, emergency server credentials..."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="kidsRoutine">Delegated Maintenance/Tasks:</label>
+                <textarea id="kidsRoutine" placeholder="e.g., Server check Friday 5pm, client emails to forward..."></textarea>
+            </div>
+            <h4 style="font-family: 'Inter', sans-serif; font-weight: 700; margin-top: 20px;">Backup/Off-Grid Procedures:</h4>
+            <div class="input-group">
+                <label for="mealFriday">If main server fails:</label>
+                <input type="text" id="mealFriday" placeholder="e.g., Switch to backup drive">
+            </div>
+            <div class="input-group">
+                <label for="mealSaturday">If communication fails:</label>
+                <input type="text" id="mealSaturday" placeholder="e.g., Use satellite phone plan">
+            </div>
+            <div class="input-group">
+                <label for="mealSunday">Weekend emergency contact:</label>
+                <input type="text" id="mealSunday" placeholder="e.g., Call Jane Smith's personal line">
+            </div>
+            <button id="saveKiddoInfo">Save Handoff Details</button>
+        </section>
+
+        <section id="documents">
+            <h2>Essential Documents & Links</h2>
+            <h3>Security & Compliance Data:</h3>
+            <div class="input-group">
+                <label for="passportNumber">Passport/Visa Number:</label>
+                <input type="text" id="passportNumber" placeholder="e.g., EU-123456789">
+            </div>
+            <div class="input-group">
+                <label for="passportExpiry">Visa/Passport Expiry Date:</label>
+                <input type="date" id="passportExpiry">
+            </div>
+            <div class="input-group">
+                <label for="travelInsurance">Travel Insurance Policy & Contact:</label>
+                <textarea id="travelInsurance" placeholder="Policy number, company name, emergency contact..."></textarea>
+            </div>
+            <div class="input-group">
+                <label for="localEmergency">Local Emergency/Tech Support Numbers:</label>
+                <textarea id="localEmergency" placeholder="Police, Ambulance, Milan Tech Support..."></textarea>
+            </div>
+            <button id="saveDocuments">Save Documents</button>
+
+            <h3 style="margin-top: 30px;">Important Project Links:</h3>
+            <form id="addImportantLinkForm" class="add-item-form">
+                <div class="input-group">
+                    <label for="linkDescription">Description:</label>
+                    <input type="text" id="linkDescription" placeholder="e.g., Milan Venue Contract" required>
+                </div>
+                <div class="input-group">
+                    <label for="linkURL">URL:</label>
+                    <input type="url" id="linkURL" placeholder="https://milanevents.com/contract" required>
+                </div>
+                <button type="submit">Add Link</button>
+            </form>
+            <ul id="important-links-list" style="list-style-type: disc; padding-left: 20px; margin-top: 15px;">
+                <!-- Links will be injected here by JS -->
+            </ul>
+        </section>
+
+
+        <section id="photos">
+            <h2>Project Assets & Photo Log</h2>
+            <div class="input-group">
+                <label for="photoUpload">Upload Venue/Asset Photos (Mockup):</label>
+                <input type="file" id="photoUpload" accept="image/*" multiple>
+                <button id="uploadPhotos">Add Photos</button>
+            </div>
+            <div id="photo-gallery" class="photo-gallery">
+                <p>No photos uploaded yet. Use this space for venue shots or equipment inventory!</p>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>© 2025 Global Logistics Planner Demo. Built by Empower Digital Solutions to manage complexity.</p>
+    </footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- Firebase Configuration ---
+    // Mandatory Canvas Global Variables
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // Initialize Firebase Services
+    let app, db, auth;
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+    } catch (e) {
+        console.error("Firebase initialization failed:", e);
+        if (e.code === 'duplicate-app') {
+            // This can happen in some hot-reload environments, try to get existing app
+            app = initializeApp(firebaseConfig, "default-logistics-app-" + Date.now());
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } else {
+            alert("Could not connect to the database. Please check your connection.");
+        }
+    }
+
+    let travelPlanRef;
+    let travelData = {};
+    let userId = null;
+
+    // --- Data Initialization (Fictional Business Roadshow Data) ---
+    function initializeDefaultData() {
+        travelData = {
+            itinerary: [
+                {
+                    type: 'travel',
+                    date: 'Monday, 10th November 2025',
+                    title: 'Travel: Glasgow to Berlin',
+                    details: [
+                        { time: '07:00', description: 'Depart Glasgow (Car to GLA)' },
+                        { time: '11:15', description: 'Arrive London Stansted (STN)' },
+                        { time: '12:45', description: 'Flight Check-in: Berlin' },
+                        { time: '17:30', description: 'Arrive Berlin (BER), Transfer to Hotel' },
+                        { time: '18:30', description: 'Hotel Check-in: Hotel Adlon Kempinski' }
+                    ],
+                    flights_connecting: [
+                         {
+                            number: 'EZ321', airline: 'EasyJet', departure: 'Glasgow (GLA) 10:00', arrival: 'London (STN) 11:15',
+                            confirmation: 'EFGH34', notes: 'First leg, transfer at Stansted.'
+                        }
+                    ],
+                    flight: {
+                        number: 'FR123', airline: 'Ryanair', departure: 'London (STN) 14:30', arrival: 'Berlin (BER) 17:15',
+                        confirmation: 'ABCD12', notes: 'Business Class, Window Seat. Prep for 9am conference.'
+                    },
+                },
+                {
+                    type: 'activity',
+                    date: 'Tuesday, 11th November 2025',
+                    title: 'Berlin Conference & Travel to Paris',
+                    details: [
+                        { time: '09:00', description: 'Keynote Conference: Berlin Tech Summit' },
+                        { time: '12:00', description: 'Conference Networking Lunch' },
+                        { time: '14:00', description: 'Depart Hotel to Berlin Airport (BER)' }
+                    ],
+                    flight: {
+                        number: 'AF112', airline: 'Air France', departure: 'Berlin (BER) 16:30', arrival: 'Paris (CDG) 18:15',
+                        confirmation: 'IJKL56', notes: 'Morning flight to Paris.'
+                    }
+                },
+                {
+                    type: 'activity',
+                    date: 'Wednesday, 12th November 2025',
+                    title: 'Paris (Louvre) & Travel to Milan',
+                    details: [
+                        { time: '10:00', description: 'Meeting: Louvre (Stolen Jewels Security Strategy)' },
+                        { time: '13:00', description: 'Meeting Concludes' },
+                        { time: '13:30', description: 'Sightseeing & Decompression (Lunch, Eiffel Tower)' },
+                        { time: '18:00', description: 'Depart Hotel to Paris Orly (ORY)' },
+                        { time: '22:30', description: 'Arrive Milan (MXP), Transfer to Hotel' },
+                        { time: '23:30', description: 'Hotel Check-in: NH Collection Milano President' }
+                    ],
+                    flight: {
+                        number: 'EZ456', airline: 'EasyJet', departure: 'Paris (ORY) 20:45', arrival: 'Milan (MXP) 22:15',
+                        confirmation: 'MNOP78', notes: 'Night flight to Milan.'
+                    }
+                },
+                {
+                    type: 'activity',
+                    date: 'Thursday, 13th November 2025',
+                    title: 'Milan (Holiday/F1 Event)',
+                    details: [
+                        { time: '10:00', description: 'F1 Event: Monza Circuit (Track Day Experience)' },
+                        { time: '13:00', description: 'Lunch at Monza' },
+                        { time: '19:00', description: 'Team Dinner (Ferrari Team - Mock)' }
+                    ],
+                },
+                {
+                    type: 'activity',
+                    date: 'Friday, 14th November 2025',
+                    title: 'Milan (Holiday/F1 Event)',
+                    details: [
+                        { time: '11:00', description: 'Ferrari Museum Tour' },
+                        { time: '15:00', description: 'Decompression / Personal Time' },
+                        { time: '18:00', description: 'Prepare for next travel leg' }
+                    ],
+                },
+                {
+                    type: 'travel',
+                    date: 'Saturday, 15th November 2025',
+                    title: 'Travel: Milan to Istanbul',
+                    details: [
+                        { time: '09:00', description: 'Depart Hotel to Milan Airport (MXP)' },
+                        { time: '16:00', description: 'Arrive Istanbul (IST), Transfer to Hotel' },
+                        { time: '17:30', description: 'Hotel Check-in: CVK Park Bosphorus Hotel' }
+                    ],
+                    flight: {
+                        number: 'TK789', airline: 'Turkish Airlines', departure: 'Milan (MXP) 11:30', arrival: 'Istanbul (IST) 15:45',
+                        confirmation: 'QRST90', notes: 'Check dentistry appointment confirmation.'
+                    },
+                },
+                {
+                    type: 'activity',
+                    date: 'Sunday, 16th November 2025',
+                    title: 'Istanbul (Dentist & Football)',
+                    details: [
+                        { time: '10:00', description: 'Appointment: Dr. M Sahin (Dentistry)' },
+                        { time: '13:00', description: 'Lunch & Sightseeing (Grand Bazaar)' },
+                        { time: '18:00', description: 'Transfer to Stadium' },
+                        { time: '20:00', description: 'Football Match: Fenerbahce vs Galatasaray' }
+                    ],
+                },
+                {
+                    type: 'travel',
+                    date: 'Monday, 17th November 2025',
+                    title: 'Travel: Istanbul to Glasgow (Home)',
+                    details: [
+                        { time: '11:00', description: 'Check-out & Transfer to Airport (IST)' },
+                    ],
+                    flight: {
+                        number: 'TK1977', airline: 'Turkish Airlines', departure: 'Istanbul (IST) 14:00', arrival: 'Glasgow (GLA) 17:30',
+                        confirmation: 'UVWX12', notes: 'Direct flight home.'
+                    },
+                    return_home: [
+                        { time: '18:30', description: 'Arrive Home' }
+                    ],
+                }
+            ],
+            packingList: [
+                { item: 'Laptop & Charger', packed: false, category: 'tech' },
+                { item: 'Conference Presentation Files', packed: true, category: 'tech' }, // Set one to true for testing
+                { item: 'International Power Adapters', packed: false, category: 'tech' },
+                { item: 'Keynote Clicker', packed: false, category: 'tech' },
+                { item: 'Business Suits (2x)', packed: false, category: 'attire' },
+                { item: 'Client NDA Hard Copies', packed: false, category: 'documents' },
+                { item: 'Per Diem Cash (Euros)', packed: false, category: 'finance' },
+            ],
+            budget: {
+                fixedCosts: [
+                    { description: 'Business Class Flights (LHR-BER-MXP-LHR)', amount: 1850.00, date: '2025-12-15' },
+                    { description: 'Milan Expo Hall Venue Deposit', amount: 500.00, date: '2026-01-20' },
+                    { description: 'Speaker Fees - External Keynote', amount: 1500.00, date: '2026-02-01' }
+                ],
+                expenses: []
+            },
+            notes: {
+                general: 'Need to confirm AV setup details with Milan team lead by end of Monday. Backup presentation on USB.',
+                souvenirs: [
+                    { item: 'Engraved pen for Tech Innovators CEO', budget: 50.00 },
+                    { item: 'Local wine for Munich team manager', budget: 35.00 }
+                ],
+                kiddoInfo: {
+                    carerContact: 'Jane Smith (Office Manager), +44-20-7946-0958',
+                    allergies: 'VPN Login: [redacted]; Admin Pass: [redacted]',
+                    routine: 'Server check Friday 5pm GMT. Client email forwarding is active.',
+                    meals: { friday: 'Switch to backup server', saturday: 'Use encrypted chat channel', sunday: 'Call Jane\'s personal line' }
+                },
+                documentsAndLinks: {
+                    passportNumber: 'EU-99887766',
+                    passportExpiry: '2028-12-31',
+                    travelInsurance: 'Policy: GLOBAL-774. Contact: GlobalAssist, +44 141 555 1234',
+                    localEmergency: 'Police (112), Ambulance (112), Local Tech Support: 0049 30 12345',
+                    importantLinks: [
+                        { description: 'Hotel Booking Confirmation - Berlin', url: 'https://demo.hotelberlin.com' },
+                        { description: 'Signed Tech Innovators NDA', url: 'https://secure.doc.share/ti-nda' }
+                    ]
+                },
+                photos: []
+            }
+        };
+    }
+
+    // --- Helper Functions ---
+
+    // Function to save data to Firebase (using setDoc for explicit control)
+    async function saveDataToFirebase() {
+        if (!travelPlanRef) {
+            console.error("Firebase reference not set. Cannot save.");
+            return;
+        }
+        try {
+            // Save the entire travelData object
+            await setDoc(travelPlanRef, travelData);
+            // console.log("Data saved to Firestore!");
+        } catch (error) {
+            console.error("Error saving data to Firestore:", error);
+        }
+    }
+
+    // Function to handle the authentication and initial data load
+    async function handleAuthenticationAndLoad() {
+        try {
+            if (initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken);
+            } else {
+                await signInAnonymously(auth);
+            }
+            
+            userId = auth.currentUser?.uid;
+            
+            if (!userId) {
+                console.error("Authentication failed, user ID is null.");
+                return;
+            }
+            
+            // Define the document reference path using the mandatory structure
+            travelPlanRef = doc(db, 'artifacts', appId, 'users', userId, 'travel_plans', 'global_tech_summit_2026');
+
+            // Use onSnapshot for real-time updates
+            onSnapshot(travelPlanRef, (doc) => {
+                if (doc.exists()) {
+                    travelData = doc.data();
+                    // Ensure all nested objects exist to prevent errors
+                    if (!travelData.budget) travelData.budget = { fixedCosts: [], expenses: [] };
+                    if (!travelData.notes) travelData.notes = { general: '', souvenirs: [], kiddoInfo: { meals: {} }, documentsAndLinks: { importantLinks: [] }, photos: [] };
+                    if (!travelData.notes.kiddoInfo) travelData.notes.kiddoInfo = { meals: {} };
+                    if (!travelData.notes.documentsAndLinks) travelData.notes.documentsAndLinks = { importantLinks: [] };
+                    if (!travelData.packingList) travelData.packingList = [];
+                    if (!travelData.itinerary) travelData.itinerary = [];
+                    
+                    renderAllSections();
+                } else {
+                    initializeDefaultData(); // If no data, populate with initial details
+                    saveDataToFirebase(); // Save the defaults
+                }
+            }, (error) => {
+                console.error("Error setting up data listener:", error);
+            });
+
+        } catch (error) {
+            console.error("Authentication failed:", error);
+        }
+    }
+
+
+    // --- DOM Elements (shortened for brevity) ---
+    const itineraryList = document.getElementById('itinerary-list');
+    const packingChecklist = document.getElementById('packing-checklist');
+    const addPackingItemForm = document.getElementById('addPackingItemForm');
+    const newPackingItemInput = document.getElementById('newPackingItem');
+    const totalFixedCostSpan = document.getElementById('totalFixedCost');
+    const totalVariableSpendingSpan = document.getElementById('totalVariableSpending');
+    const addExpenseForm = document.getElementById('addExpenseForm');
+    const expenseDescriptionInput = document.getElementById('expenseDescription');
+    const expenseAmountInput = document.getElementById('expenseAmount');
+    const expenseCategorySelect = document.getElementById('expenseCategory');
+    const expenseListDiv = document.getElementById('expense-list');
+    const generalNotesTextarea = document.getElementById('generalNotes');
+    const saveNotesButton = document.getElementById('saveNotes');
+    const addSouvenirForm = document.getElementById('addSouvenirForm');
+    const newSouvenirInput = document.getElementById('newSouvenir');
+    const souvenirBudgetInput = document.getElementById('souvenirBudget');
+    const souvenirListUl = document.getElementById('souvenir-list');
+    const carerContactInput = document.getElementById('carerContact');
+    const kidsAllergiesTextarea = document.getElementById('kidsAllergies');
+    const kidsRoutineTextarea = document.getElementById('kidsRoutine');
+    const mealFridayInput = document.getElementById('mealFriday');
+    const mealSaturdayInput = document.getElementById('mealSaturday');
+    const mealSundayInput = document.getElementById('mealSunday');
+    const saveKiddoInfoButton = document.getElementById('saveKiddoInfo');
+    const photoUploadInput = document.getElementById('photoUpload');
+    const uploadPhotosButton = document.getElementById('uploadPhotos');
+    const photoGalleryDiv = document.getElementById('photo-gallery');
+    const nextEventDiv = document.getElementById('nextEvent');
+    
+    // --- Dashboard Action Items ---
+    const dashboardSummaryDiv = document.getElementById('dashboard-summary');
+    const dashboardActionItemsUl = document.getElementById('dashboard-action-items');
+
+    const passportNumberInput = document.getElementById('passportNumber');
+    const passportExpiryInput = document.getElementById('passportExpiry');
+    const travelInsuranceTextarea = document.getElementById('travelInsurance');
+    const localEmergencyTextarea = document.getElementById('localEmergency');
+    const saveDocumentsButton = document.getElementById('saveDocuments');
+    const addImportantLinkForm = document.getElementById('addImportantLinkForm');
+    const linkDescriptionInput = document.getElementById('linkDescription');
+    const linkURLInput = document.getElementById('linkURL');
+    const importantLinksListUl = document.getElementById('important-links-list');
+
+    // --- NEW --- Event Form Elements
+    const addItineraryForm = document.getElementById('addItineraryForm');
+    const newEventDateInput = document.getElementById('newEventDate');
+    const newEventTitleInput = document.getElementById('newEventTitle');
+    const newEventTimeInput = document.getElementById('newEventTime');
+    const newEventDescriptionInput = document.getElementById('newEventDescription');
+
+
+    // --- Rendering Functions (Simplified from original) ---
+
+    function renderItinerary() {
+        if (!itineraryList) return;
+        itineraryList.innerHTML = '';
+        if (!travelData.itinerary) return;
+        
+        travelData.itinerary.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'itinerary-item';
+
+            let content = `<h3>${item.date} - ${item.title}</h3>`;
+
+            if (item.details) {
+                item.details.forEach(detail => {
+                    content += `<p><strong>${detail.time}:</strong> ${detail.description}</p>`;
+                });
+            }
+            if (item.flights_connecting) {
+                item.flights_connecting.forEach(flight => {
+                    content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 8px;">Connecting Flight:</p>
+                                <p style="font-size: 0.9em;"><strong>${flight.airline} ${flight.number}:</strong> ${flight.departure} to ${flight.arrival}</p>`;
+                });
+            }
+            if (item.flight) {
+                 content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 8px;">Flight Details:</p>
+                                   <p style="font-size: 0.9em;"><strong>${item.flight.airline} ${item.flight.number}:</strong> ${item.flight.departure} to ${item.flight.arrival} | Confirmation: ${item.flight.confirmation}</p>`;
+            }
+
+            // Repurpose extra notes sections for the demo
+            if (item.return_home) {
+                content += `<p style="font-weight: 600; font-size: 0.9em; margin-top: 8px;">Logistics:</p>`;
+                item.return_home.forEach(detail => { content += `<p style="font-size: 0.9em;">${detail.description}</p>`; });
+            }
+
+            itemDiv.innerHTML = content;
+            itineraryList.appendChild(itemDiv);
+        });
+        updateDashboard();
+    }
+
+    function renderPackingList() {
+        if (!packingChecklist) return;
+        packingChecklist.innerHTML = '';
+        if (!travelData.packingList) return;
+
+        travelData.packingList.forEach((item, index) => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = item.packed;
+            checkbox.dataset.index = index;
+            checkbox.addEventListener('change', (e) => {
+                travelData.packingList[e.target.dataset.index].packed = e.target.checked;
+                saveDataToFirebase();
+                updateDashboard(); // Re-run dashboard logic to update action items
+            });
+
+            const span = document.createElement('span');
+            span.textContent = item.item;
+            if (item.packed) {
+                span.style.textDecoration = 'line-through';
+                span.style.color = '#888';
+            }
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.style.marginLeft = 'auto'; // Pushes button to the right
+            deleteBtn.style.backgroundColor = '#dc3545';
+            deleteBtn.style.padding = '5px 10px';
+            deleteBtn.style.fontSize = '0.8em';
+            deleteBtn.style.borderRadius = '5px';
+            deleteBtn.style.marginTop = '0';
+            deleteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                travelData.packingList.splice(index, 1);
+                saveDataToFirebase();
+            });
+
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            label.appendChild(deleteBtn);
+            packingChecklist.appendChild(label);
+        });
+    }
+
+    function renderBudget() {
+        if (!totalFixedCostSpan || !expenseListDiv) return;
+
+        let totalFixed = 0;
+        (travelData.budget.fixedCosts || []).forEach(cost => { totalFixed += cost.amount; });
+        totalFixedCostSpan.textContent = `£${totalFixed.toFixed(2)}`;
+
+        let totalVariable = 0;
+        expenseListDiv.innerHTML = '<h3>Expense Breakdown:</h3>';
+
+        const renderExpenseItem = (expense, index, listType) => {
+            const expenseItem = document.createElement('div');
+            expenseItem.className = 'expense-item';
+            const categoryDisplay = listType === 'fixed' ? 'Fixed Project Cost' : expense.category;
+            
+            expenseItem.innerHTML = `<p style="display: flex; justify-content: space-between; align-items: center; width: 100%;"><span><strong>${expense.description}</strong> - £${expense.amount.toFixed(2)} (${categoryDisplay})</span></p>`;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            // deleteBtn.style.marginLeft = 'auto'; // Handled by flex
+            deleteBtn.style.backgroundColor = '#dc3545';
+            deleteBtn.style.padding = '5px 10px';
+            deleteBtn.style.fontSize = '0.8em';
+            deleteBtn.style.borderRadius = '5px';
+            deleteBtn.style.marginTop = '0'; // Override button default
+            
+            deleteBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (listType === 'fixed') {
+                    travelData.budget.fixedCosts.splice(index, 1);
+                } else {
+                    travelData.budget.expenses.splice(index, 1);
+                }
+                saveDataToFirebase();
+            });
+            expenseItem.querySelector('p').appendChild(deleteBtn);
+            expenseListDiv.appendChild(expenseItem);
+        };
+
+        (travelData.budget.fixedCosts || []).forEach((expense, index) => renderExpenseItem(expense, index, 'fixed'));
+        
+        (travelData.budget.expenses || []).forEach((expense, index) => {
+            totalVariable += expense.amount;
+            renderExpenseItem(expense, index, 'variable');
+        });
+
+        totalVariableSpendingSpan.textContent = `£${totalVariable.toFixed(2)}`;
+    }
+
+    function renderNotes() {
+        if (!generalNotesTextarea || !souvenirListUl) return;
+
+        generalNotesTextarea.value = travelData.notes.general || '';
+        carerContactInput.value = travelData.notes.kiddoInfo?.carerContact || '';
+        kidsAllergiesTextarea.value = travelData.notes.kiddoInfo?.allergies || '';
+        kidsRoutineTextarea.value = travelData.notes.kiddoInfo?.routine || '';
+        mealFridayInput.value = travelData.notes.kiddoInfo?.meals?.friday || '';
+        mealSaturdayInput.value = travelData.notes.kiddoInfo?.meals?.saturday || '';
+        mealSundayInput.value = travelData.notes.kiddoInfo?.meals?.sunday || '';
+
+        souvenirListUl.innerHTML = '';
+        (travelData.notes.souvenirs || []).forEach((souvenir, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            li.style.marginBottom = '5px';
+            
+            const text = document.createElement('span');
+            text.textContent = `${souvenir.item} (£${souvenir.budget ? souvenir.budget.toFixed(2) : 'N/A'})`;
+            li.appendChild(text);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.style.backgroundColor = '#dc3545';
+            deleteBtn.style.padding = '3px 8px';
+            deleteBtn.style.fontSize = '0.7em';
+            deleteBtn.style.marginLeft = '10px';
+            deleteBtn.style.borderRadius = '3px';
+            deleteBtn.style.marginTop = '0';
+            deleteBtn.addEventListener('click', () => {
+                travelData.notes.souvenirs.splice(index, 1);
+                saveDataToFirebase();
+            });
+            li.appendChild(deleteBtn);
+            souvenirListUl.appendChild(li);
+        });
+    }
+    
+    function renderDocumentsAndLinks() {
+        if (!passportNumberInput || !importantLinksListUl) return;
+
+        // Populate form fields
+        passportNumberInput.value = travelData.notes.documentsAndLinks?.passportNumber || '';
+        passportExpiryInput.value = travelData.notes.documentsAndLinks?.passportExpiry || '';
+        travelInsuranceTextarea.value = travelData.notes.documentsAndLinks?.travelInsurance || '';
+        localEmergencyTextarea.value = travelData.notes.documentsAndLinks?.localEmergency || '';
+
+        // Render links
+        importantLinksListUl.innerHTML = '';
+        (travelData.notes.documentsAndLinks?.importantLinks || []).forEach((link, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex';
+            li.style.justifyContent = 'space-between';
+            li.style.alignItems = 'center';
+            li.style.marginBottom = '5px';
+
+            li.innerHTML = `<a href="${link.url}" target="_blank" style="color: var(--primary-blue); font-weight: bold;">${link.description}</a>`;
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.style.backgroundColor = '#dc3545';
+            deleteBtn.style.padding = '3px 8px';
+            deleteBtn.style.fontSize = '0.7em';
+            deleteBtn.style.marginLeft = '10px';
+            deleteBtn.style.borderRadius = '3px';
+            deleteBtn.style.marginTop = '0';
+            deleteBtn.addEventListener('click', () => {
+                travelData.notes.documentsAndLinks.importantLinks.splice(index, 1);
+                saveDataToFirebase();
+            });
+            li.appendChild(deleteBtn);
+            importantLinksListUl.appendChild(li);
+        });
+    }
+    
+    function renderPhotos() {
+        if (!photoGalleryDiv) return;
+        photoGalleryDiv.innerHTML = '<p>No photos uploaded yet. Use this space for venue shots or equipment inventory!</p>';
+    }
+    
+    // --- Dashboard Update (uses data from the live itinerary) ---
+    function updateDashboard() {
+        if (!nextEventDiv || !dashboardActionItemsUl || !travelData.itinerary) return;
+
+        // --- Find Next Event ---
+        const now = new Date();
+        const allEventsWithTimes = [];
+
+        travelData.itinerary.forEach(day => {
+            if (!day.date) return;
+            const baseDate = new Date(day.date);
+            if (isNaN(baseDate.getTime())) return; // Invalid date
+            
+            const extractEvents = (detailsArray, prefix = '') => {
+                (detailsArray || []).forEach(detail => {
+                    // Updated REGEX to parse 24-hour time
+                    const timeParts = detail.time.match(/(\d{1,2}):(\d{2})/i);
+                    if (timeParts) {
+                        let hours = parseInt(timeParts[1]);
+                        const minutes = parseInt(timeParts[2]);
+
+                        // No AM/PM logic needed
+                        const eventDateTime = new Date(baseDate);
+                        eventDateTime.setHours(hours, minutes, 0, 0);
+                        allEventsWithTimes.push({
+                            title: `${prefix}${day.title} - ${detail.description}`,
+                            dateTime: eventDateTime
+                        });
+                    }
+                });
+            };
+
+            extractEvents(day.details);
+            extractEvents(day.return_home, 'Logistics: ');
+        });
+
+        allEventsWithTimes.sort((a, b) => a.dateTime.getTime() - b.dateTime.getTime());
+        const nextEvent = allEventsWithTimes.find(event => event.dateTime.getTime() > now.getTime());
+
+        if (nextEvent) {
+            nextEventDiv.textContent = `Next Up: ${nextEvent.title}`;
+        } else {
+            nextEventDiv.textContent = "Project Roadshow Complete!";
+        }
+
+        // --- Populate Action Items ---
+        dashboardActionItemsUl.innerHTML = ''; // Clear existing
+        const actionItems = (travelData.packingList || []).filter(item => !item.packed);
+        
+        if (actionItems.length === 0) {
+            const li = document.createElement('li');
+            li.textContent = "All items packed. You're good to go!";
+            li.style.color = 'var(--accent-turquoise)';
+            dashboardActionItemsUl.appendChild(li);
+        } else {
+            // Show the first 3 action items
+            actionItems.slice(0, 3).forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item.item;
+                dashboardActionItemsUl.appendChild(li);
+            });
+            if (actionItems.length > 3) {
+                const li = document.createElement('li');
+                li.textContent = `...and ${actionItems.length - 3} more.`;
+                li.style.fontStyle = 'italic';
+                dashboardActionItemsUl.appendChild(li);
+            }
+        }
+    }
+
+
+    // --- Master Render Function ---
+    function renderAllSections() {
+        renderItinerary();
+        renderPackingList();
+        renderBudget();
+        renderNotes();
+        renderDocumentsAndLinks();
+        renderPhotos(); // This remains a dummy/mockup display for safety
+        updateDashboard(); // updateDashboard is called by renderItinerary, but we call it again for safety
+    }
+
+    // --- Event Listeners ---
+    function setupEventListeners() {
+
+        // --- NEW --- Add Itinerary Event
+        if (addItineraryForm) {
+            addItineraryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const dateVal = newEventDateInput.value;
+                const titleVal = newEventTitleInput.value.trim();
+                const timeVal = newEventTimeInput.value; // Already HH:mm
+                const descVal = newEventDescriptionInput.value.trim();
+
+                if (dateVal && titleVal && timeVal && descVal) {
+                    // Format the date to match the existing data structure
+                    const dateObj = new Date(dateVal);
+                    // Adjust for timezone offset to prevent day-before issues
+                    const utcDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60000);
+                    const formattedDate = utcDate.toLocaleDateString('en-GB', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+
+                    // Create a new itinerary item
+                    const newItineraryItem = {
+                        type: 'activity', // Default to 'activity' for simplicity
+                        date: formattedDate,
+                        title: titleVal,
+                        details: [
+                            { time: timeVal, description: descVal } // Use 24-hr time directly
+                        ]
+                        // Not including flight/complex data for this simple add
+                    };
+
+                    // Add to the main data object
+                    travelData.itinerary.push(newItineraryItem);
+                    
+                    // Sort the itinerary by date after adding
+                    travelData.itinerary.sort((a, b) => {
+                        const dateA = new Date(a.date).getTime();
+                        const dateB = new Date(b.date).getTime();
+                        if (isNaN(dateA) || isNaN(dateB)) return 0;
+                        return dateA - dateB;
+                    });
+
+                    // Save to Firebase
+                    saveDataToFirebase();
+
+                    // Clear the form
+                    addItineraryForm.reset();
+                }
+            });
+        }
+
+        // Packing List
+        if (addPackingItemForm) {
+            addPackingItemForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newItem = newPackingItemInput.value.trim();
+                if (newItem) {
+                    travelData.packingList.push({ item: newItem, packed: false, category: 'custom' });
+                    newPackingItemInput.value = '';
+                    saveDataToFirebase();
+                }
+            });
+        }
+
+        // Budget Tracker
+        if (addExpenseForm) {
+            addExpenseForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const description = expenseDescriptionInput.value.trim();
+                const amount = parseFloat(expenseAmountInput.value);
+                const category = expenseCategorySelect.value;
+
+                if (description && !isNaN(amount) && category) {
+                    if (category === 'fixed') {
+                        travelData.budget.fixedCosts.push({ description, amount, date: new Date().toISOString().split('T')[0] });
+                    } else {
+                        travelData.budget.expenses.push({ description, amount, category, date: new Date().toISOString().split('T')[0] });
+                    }
+                    expenseDescriptionInput.value = '';
+                    expenseAmountInput.value = '';
+                    expenseCategorySelect.value = '';
+                    saveDataToFirebase();
+                }
+            });
+        }
+
+        // Notes & Kiddo Info
+        if (saveNotesButton) {
+            saveNotesButton.addEventListener('click', () => {
+                travelData.notes.general = generalNotesTextarea.value.trim();
+                saveDataToFirebase();
+            });
+        }
+
+        if (addSouvenirForm) {
+            addSouvenirForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const item = newSouvenirInput.value.trim();
+                const budget = parseFloat(souvenirBudgetInput.value);
+                if (item) {
+                    travelData.notes.souvenirs.push({ item, budget: isNaN(budget) ? null : budget });
+                    newSouvenirInput.value = '';
+                    souvenirBudgetInput.value = '';
+                    saveDataToFirebase();
+                }
+            });
+        }
+
+        if (saveKiddoInfoButton) {
+            saveKiddoInfoButton.addEventListener('click', () => {
+                // Repurposed field names
+                travelData.notes.kiddoInfo.carerContact = carerContactInput.value.trim();
+                travelData.notes.kiddoInfo.allergies = kidsAllergiesTextarea.value.trim();
+                travelData.notes.kiddoInfo.routine = kidsRoutineTextarea.value.trim();
+                travelData.notes.kiddoInfo.meals.friday = mealFridayInput.value.trim();
+                travelData.notes.kiddoInfo.meals.saturday = mealSaturdayInput.value.trim();
+                travelData.notes.kiddoInfo.meals.sunday = mealSundayInput.value.trim();
+                saveDataToFirebase();
+            });
+        }
+
+        // Photo Upload (Client-side display only for this self-contained file)
+        if (uploadPhotosButton) {
+            uploadPhotosButton.addEventListener('click', () => {
+                const msgBox = document.createElement('div');
+                msgBox.style.position = 'fixed';
+                msgBox.style.top = '20px';
+                msgBox.style.left = '50%';
+                msgBox.style.transform = 'translateX(-50%)';
+                msgBox.style.padding = '16px';
+                msgBox.style.backgroundColor = 'var(--accent-turquoise)';
+                msgBox.style.color = 'white';
+                msgBox.style.borderRadius = '8px';
+                msgBox.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                msgBox.style.zIndex = '1000';
+                msgBox.textContent = 'Demo: Photo storage is disabled in this public version for security.';
+                document.body.appendChild(msgBox);
+                setTimeout(() => { msgBox.remove(); }, 4000);
+            });
+        }
+
+        // Documents & Links
+        if (saveDocumentsButton) {
+            saveDocumentsButton.addEventListener('click', () => {
+                travelData.notes.documentsAndLinks.passportNumber = passportNumberInput.value.trim();
+                travelData.notes.documentsAndLinks.passportExpiry = passportExpiryInput.value.trim();
+                travelData.notes.documentsAndLinks.travelInsurance = travelInsuranceTextarea.value.trim();
+                travelData.notes.documentsAndLinks.localEmergency = localEmergencyTextarea.value.trim();
+                saveDataToFirebase();
+            });
+        }
+
+        if (addImportantLinkForm) {
+            addImportantLinkForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const description = linkDescriptionInput.value.trim();
+                const url = linkURLInput.value.trim();
+                if (description && url) {
+                    if (!travelData.notes.documentsAndLinks.importantLinks) {
+                        travelData.notes.documentsAndLinks.importantLinks = [];
+                    }
+                    travelData.notes.documentsAndLinks.importantLinks.push({ description, url });
+                    linkDescriptionInput.value = '';
+                    linkURLInput.value = '';
+                    saveDataToFirebase();
+                }
+            });
+        }
+    }
+    
+    // --- Initial Load ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setupEventListeners();
+        handleAuthenticationAndLoad();
+        // Removed the setInterval for dashboard update, it's now called by render functions
+    });
+
+</script>
+</body>
+</html>
+
